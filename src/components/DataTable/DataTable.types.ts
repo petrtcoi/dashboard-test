@@ -7,7 +7,8 @@ export type WorkWithMeta = WorkGetDto & { _meta_: WorkMeta }
 
 export type WorkMeta = {
   level: WorkLevel
-  haveChild: boolean
+  hasChild: boolean
+  isLastChild?: boolean
 }
 
 export type WorkLevel = 1 | 2 | 3

@@ -1,10 +1,5 @@
-@use './../../styles/shared/colors' as color;
-
 .data-table {
   margin: 11px;
   width: 100%;
-
-  
-
-  border-bottom: 1px solid color.$grey;
+  border-collapse: collapse; 
 }

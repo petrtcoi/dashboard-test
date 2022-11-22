@@ -23,7 +23,9 @@ export const useGetWorksFlatList = (dtoWorks: WorkGetDto[]): WorkWithMeta[] => {
 
 
 const getWorksWithMetaFlatList = (works: WorkGetDto[]): WorkWithMeta[] => {
-  return works.map(work => unpackWork(work, 1)).flat()
+  return works
+    .map(work => unpackWork(work, 1))
+    .flat()
 }
 
 
@@ -35,6 +37,19 @@ function unpackWork(work: WorkGetDto, level: SomeWorkLevel): WorkWithMeta[] {
     ...work.child
       .map(workChild => unpackWork(workChild, getNextLevel(level)))
       .flat()
+      // отмечаем последние элементы в списке
+      .map((work, index, workList) => {
+        return (
+          (
+            (index + 1) === workList.length ||
+            work._meta_.level === workList[index - 1]?._meta_?.level
+          )
+            ?
+            { ...work, _meta_: { ...work._meta_, isLastChild: true } }
+            : work
+        )
+      })
+
   ]
 }
 
@@ -44,7 +59,7 @@ function addMeta(work: WorkGetDto, level: WorkLevel): WorkWithMeta {
     ...work,
     _meta_: {
       level,
-      haveChild: work.child.length > 0
+      hasChild: work.child.length > 0
     }
   })
 }
