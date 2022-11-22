@@ -1,20 +1,20 @@
 import React from 'react'
 import { TableHeader } from './TableHeader'
-import { useGetWorksFlatList } from './DataTable.service'
 
-import { WorkGetDto } from '../../typescript/work.type'
-import './DataTable.styles.scss'
 import { TableRow } from './TableRow'
+import { useAppSelector } from '../../redux/hooks/index'
+
+import './DataTable.styles.scss'
+
 
 
 
 type DataTableProps = {
-  works: WorkGetDto[]
 }
 
-const DataTable: React.FC<DataTableProps> = (props) => {
+const DataTable: React.FC<DataTableProps> = (_props) => {
 
-  const works = useGetWorksFlatList(props.works)
+  const works = useAppSelector(state => state.works.works)
 
   return (
     <table className='data-table'>

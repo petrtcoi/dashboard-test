@@ -1,5 +1,5 @@
 import React from 'react'
-import * as api from './../../api/server'
+import * as api from './../../api'
 
 import { isApiError } from '../../api/typings/api.type'
 import { WorkGetDto, WorkGetListDto } from '../../typescript/work.type'
