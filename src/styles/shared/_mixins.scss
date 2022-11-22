@@ -1,0 +1,7 @@
+// Выводит данные из MAP в свойства
+@mixin props($declarations) {
+  @each $property, $value in $declarations {
+    #{$property}: $value
+  }
+}
+

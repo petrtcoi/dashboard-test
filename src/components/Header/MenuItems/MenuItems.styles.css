@@ -1,0 +1,27 @@
+.menu-items-list {
+  display: flex;
+  padding: 0;
+  height: 100%;
+  list-style-type: none;
+}
+
+.menu-items__item {
+  position: relative;
+  display: flex;
+  margin-left: 35px;
+  align-items: center;
+  height: 100%;
+  color: #a1a1aa;
+}
+.menu-items__item[data-active=true] {
+  color: hsl(0deg, 0%, 100%);
+}
+.menu-items__item[data-active=true]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 100%;
+  background-color: hsl(0deg, 0%, 100%);
+}/*# sourceMappingURL=MenuItems.styles.css.map */

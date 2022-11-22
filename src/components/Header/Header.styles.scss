@@ -1,0 +1,39 @@
+@use './../../styles/shared/colors' as color;
+@use './../../styles/shared/dimensions' as dm;
+
+.navbar {
+  display: flexbox;
+}
+
+@mixin header-row {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  box-sizing: border-box;
+  background-color: color.$background-color-light;
+  border-bottom: 1px solid color.$grey;
+}
+
+.header__row {
+  @include header-row;
+  padding-left: 24px;
+}
+.subheader__row {
+  @include header-row;
+  // padding-left: dm.$left-navbar-padding-left
+}
+
+
+.header__menu-button {
+  font-size: 16px;
+  color: color.$primary-light;
+}
+.header__back-button {
+  margin-left: 29px;
+  font-size: 18px;
+  color: color.$primary-light;
+}
+
+
+
+

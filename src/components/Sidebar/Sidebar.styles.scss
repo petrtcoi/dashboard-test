@@ -1,0 +1,35 @@
+@use './../../styles/shared/colors' as color;
+@use './../../styles//shared/dimensions' as dm;
+
+.sidebar {
+  position: absolute;
+  display: flexbox;
+  height: 100%;
+  flex-grow: 1;
+  padding: 0;
+
+  width: dm.$left-navbar-width;
+  box-sizing: border-box;
+
+  background-color: color.$background-color-light;
+  border-right: 1px solid color.$grey;
+}
+
+ul.sidebar__projects-list {
+  padding: 0;
+  margin-top: 0;
+  list-style-type: none;
+
+  & > li {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: dm.$left-navbar-padding-left;
+  }
+  & > li[data-selected='true'] {
+    background-color: color.$primary-light;
+  }
+}
+.sidebar__projects-list__bullet {
+  font-size: 16px;
+  margin-right: 17px;
+}

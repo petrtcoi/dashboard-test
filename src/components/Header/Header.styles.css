@@ -1,0 +1,33 @@
+.navbar {
+  display: flexbox;
+}
+
+.header__row {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  box-sizing: border-box;
+  background-color: #27272a;
+  border-bottom: 1px solid #414144;
+  padding-left: 24px;
+}
+
+.subheader__row {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  box-sizing: border-box;
+  background-color: #27272a;
+  border-bottom: 1px solid #414144;
+}
+
+.header__menu-button {
+  font-size: 16px;
+  color: #a1a1aa;
+}
+
+.header__back-button {
+  margin-left: 29px;
+  font-size: 18px;
+  color: #a1a1aa;
+}/*# sourceMappingURL=Header.styles.css.map */

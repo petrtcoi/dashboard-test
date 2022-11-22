@@ -1,0 +1,16 @@
+@use './colors' as colors;
+
+$font-stack: ('Roboto', 'Arial', sans-serif);
+$font-size: 14px;
+$font-weight: 400;
+$line-height: 130%;
+$font-style: 'normal';
+
+$font-default: (
+  'font-family': $font-stack,
+  'font-size': $font-size,
+  'font-style': $font-style,
+  'font-weight': $font-weight,
+  'line-height': $line-height,
+  'color': colors.$primary,
+);

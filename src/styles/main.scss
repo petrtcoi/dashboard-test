@@ -1,0 +1,11 @@
+@use './shared/index' as *;
+
+@import './icons/icons.css';
+
+html,
+body {
+  margin: 0;
+
+  @include props($font-default);
+  background-color: $background-color;
+}

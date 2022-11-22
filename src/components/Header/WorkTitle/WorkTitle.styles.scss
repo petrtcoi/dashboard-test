@@ -1,0 +1,30 @@
+@use './../../../styles/shared/colors' as color;
+@use './../../../styles//shared/dimensions' as dm;
+
+.subheader_worktitle {
+  display: flex;
+  align-items: center;
+  padding-inline: 15px;
+  height: 100%;
+
+  color: color.$primary;
+  font-size: 18px;
+  background-color: color.$background-color-light;
+  
+  border-right: 1px solid color.$grey;
+}
+
+.subheader_left-block__header {
+ 
+  font-size: 14px;
+  line-height: 16px;
+}
+.subheader_left-block__subheader {
+  color: color.$primary-light;
+  font-size: 10px;
+  line-height: 12px;
+}
+.subheader_left-block__icon {
+  margin-right: 13px;
+  font-size: 8px;
+}

@@ -1,0 +1,26 @@
+.subheader_worktitle {
+  display: flex;
+  align-items: center;
+  padding-inline: 15px;
+  height: 100%;
+  color: hsl(0deg, 0%, 100%);
+  font-size: 18px;
+  background-color: #27272a;
+  border-right: 1px solid #414144;
+}
+
+.subheader_left-block__header {
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.subheader_left-block__subheader {
+  color: #a1a1aa;
+  font-size: 10px;
+  line-height: 12px;
+}
+
+.subheader_left-block__icon {
+  margin-right: 13px;
+  font-size: 8px;
+}/*# sourceMappingURL=WorkTitle.styles.css.map */
