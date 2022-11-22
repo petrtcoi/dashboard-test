@@ -1,8 +1,8 @@
 import Ajv, { JSONSchemaType } from 'ajv'
 const ajv = new Ajv({ allErrors: true })
 
-
 type Work = {
+  id: number,
   parentId: number,
   rowName: string,
 
@@ -24,11 +24,15 @@ export type WorkGetDto = Work & {
 }
 export type WorkGetListDto = WorkGetDto[]
 
+
+
+
 // @ts-ignore
 const workGetSchema: JSONSchemaType<WorkGetDto> = {
   $id: 'work-get-schema',
   type: 'object',
   properties: {
+    id: { type: 'integer' },
     parentId: { type: 'integer' },
     rowName: { type: 'string' },
 
@@ -49,7 +53,7 @@ const workGetSchema: JSONSchemaType<WorkGetDto> = {
     }
   },
   required: [
-    'rowName', 'equipmentCosts', 'estimatedProfit',
+    'id', 'rowName', 'equipmentCosts', 'estimatedProfit',
     'machineOperatorSalary', 'mainCosts', 'materials', 'mimExploitation',
     'overheads', 'salary', 'supportCosts', 'total', 'child'
   ],
