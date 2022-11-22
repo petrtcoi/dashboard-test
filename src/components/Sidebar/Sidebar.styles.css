@@ -1,6 +1,6 @@
 .sidebar {
   position: absolute;
-  display: flexbox;
+  display: flex;
   height: 100%;
   flex-grow: 1;
   padding: 0;

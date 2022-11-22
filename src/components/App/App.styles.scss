@@ -5,7 +5,9 @@
 }
 
 .main-block {
-  position: relative;
+  display: flex;  
+  flex-direction: row;
+  align-items: flex-start;
   flex-grow: 1;
-  height: 20px;
+  height: 100%;
 }

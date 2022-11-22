@@ -1,0 +1,25 @@
+@use './../../../styles/shared/colors' as color;
+
+
+th {
+  padding: 0px 12px 12px 12px;
+  // height: 30px;
+ 
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1em;
+  vertical-align: bottom;
+
+  text-align: left;
+  color: color.$primary-light;
+ 
+  &:not(#level):not([id=project-title]) { 
+    max-width: 200px;
+    min-width: 140px;
+  }
+  &[id=project-title] { 
+    min-width: 400px;
+  }
+  
+
+}

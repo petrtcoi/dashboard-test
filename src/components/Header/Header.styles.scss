@@ -1,9 +1,7 @@
 @use './../../styles/shared/colors' as color;
 @use './../../styles/shared/dimensions' as dm;
 
-.navbar {
-  flex: 0 0 100%;
-}
+
 
 @mixin header-row {
   display: flex;

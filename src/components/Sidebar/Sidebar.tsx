@@ -11,7 +11,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
   return (
 
 
-    <nav className='sidebar'>
+    <div className='sidebar'>
       <ul className='sidebar__projects-list'>
         { props.projects.map((project, index) => {
 
@@ -25,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
           )
         }) }
       </ul>
-    </nav>
+    </div>
   )
 }
 

@@ -1,5 +1,5 @@
 .navbar {
-  display: flexbox;
+  flex: 0 0 100%;
 }
 
 .header__row {

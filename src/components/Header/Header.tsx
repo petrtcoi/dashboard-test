@@ -12,13 +12,12 @@ type HeaderProps = {}
 const Header: React.FC<HeaderProps> = (_props) => {
 
   return (
-    <header className='navbar'>
+    <header>
       <nav className='header__row' data-testid='header'>
         <div className='header__menu-button icon-menu' />
         <div className='header__back-button icon-back' />
         <MenuItems />
       </nav>
-
       <div className='subheader__row' data-testid='subheader'>
         <SubheaderLeftBlock />
         <WorkTitle />
