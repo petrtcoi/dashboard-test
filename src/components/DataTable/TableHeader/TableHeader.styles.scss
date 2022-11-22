@@ -13,11 +13,11 @@ th {
   text-align: left;
   color: color.$primary-light;
  
-  &:not(#level):not([id=project-title]) { 
+  &:not(#level):not([id=title]) { 
     max-width: 200px;
     min-width: 140px;
   }
-  &[id=project-title] { 
+  &[id=title] { 
     min-width: 400px;
   }
   
