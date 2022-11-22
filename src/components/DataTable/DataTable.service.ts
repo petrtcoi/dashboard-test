@@ -10,7 +10,7 @@ import { SomeWorkLevel, getNextLevel, WorkLevel, WorkWithMeta, isCorrectLevel } 
  */
 export const useGetWorksFlatList = (dtoWorks: WorkGetDto[]): WorkWithMeta[] => {
   const [works, setWorks] = React.useState<WorkWithMeta[]>([])
- 
+
   React.useEffect(() => {
     setWorks(getWorksWithMetaFlatList(dtoWorks))
   }, [dtoWorks])
@@ -26,6 +26,7 @@ const getWorksWithMetaFlatList = (works: WorkGetDto[]): WorkWithMeta[] => {
   return works.map(work => unpackWork(work, 1)).flat()
 }
 
+
 function unpackWork(work: WorkGetDto, level: SomeWorkLevel): WorkWithMeta[] {
   if (!isCorrectLevel(level)) return []
 
@@ -38,11 +39,12 @@ function unpackWork(work: WorkGetDto, level: SomeWorkLevel): WorkWithMeta[] {
 }
 
 
-
 function addMeta(work: WorkGetDto, level: WorkLevel): WorkWithMeta {
   return ({
     ...work,
-    level,
-    haveChild: work.child.length > 0
+    _meta_: {
+      level,
+      haveChild: work.child.length > 0
+    }
   })
 }

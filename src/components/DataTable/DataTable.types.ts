@@ -2,7 +2,7 @@ import { WorkGetDto } from '../../typescript/work.type'
 
 
 
-export type WorkWithMeta = WorkGetDto & WorkMeta
+export type WorkWithMeta = WorkGetDto & { _meta_: WorkMeta }
 
 
 export type WorkMeta = {
