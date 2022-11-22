@@ -1,5 +1,8 @@
 import React from 'react'
 import { WorkWithMeta } from '../DataTable.types'
+import { DisplayDataCells } from './DisplayDataCells'
+import { EditDataCells } from './EditDataCells'
+import { IconsCell } from './IconsCell'
 import './TableRow.styles.scss'
 
 type TableRowProps = {
@@ -8,24 +11,15 @@ type TableRowProps = {
 
 const TableRow: React.FC<TableRowProps> = (props) => {
 
-  const folderType = props.work._meta_.level === 1 ? '' :
-    props.work._meta_.isLastChild ? 'child-last' : 'child'
-
+  const [editing, setEditing] = React.useState<boolean>(false)
 
   return (
-    <tr data-testid={ `work-${props.work.id}` }>
-      <td data-testid={ `work-${props.work.id}-level` } >
-        <div className={ `level-${props.work._meta_.level}` } data-folder={ folderType }>
-          <span className='folder-vertical-lines' />
-          <span className='folder-horizontal-lines' />
-          <span className={ `folder-icon icon-level-${props.work._meta_.level}` } />
-        </div>
-      </td>
-      <td data-testid={ `work-${props.work.id}-title` }>{ props.work.rowName } { props.work._meta_.isLastChild ? 'last' : 'sibling' }</td>
-      <td data-testid={ `work-${props.work.id}-salary` }>{ props.work.salary }</td>
-      <td data-testid={ `work-${props.work.id}-materials` }>{ props.work.materials }</td>
-      <td data-testid={ `work-${props.work.id}-overheads` }>{ props.work.overheads }</td>
-      <td data-testid={ `work-${props.work.id}-profit` }>{ props.work.estimatedProfit }</td>
+    <tr onDoubleClick={ () => setEditing(true) } className="table-row">
+      <IconsCell meta={ props.work._meta_ } />
+      { editing ?
+        <EditDataCells work={ props.work } /> :
+        <DisplayDataCells work={ props.work } />
+      }
     </tr>
 
   )

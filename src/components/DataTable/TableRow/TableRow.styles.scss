@@ -3,11 +3,6 @@
 $tr-height: 60px;
 $td-padding-left: 12px;
 
-$icon-font-size: 16px;
-$half-icon: calc($icon-font-size / 2);
-$shift: calc($icon-font-size + 4px);
-$vertical-shift: calc($tr-height / 2 - 2px);
-
 tr {
   height: $tr-height;
   border-bottom: 1px solid color.$grey;
@@ -16,70 +11,8 @@ td {
   padding-left: $td-padding-left;
 }
 
-.folder-icon {
-  z-index: 100;
-  align-self: center;
-  font-size: $icon-font-size;
-}
-
-//  ИКОНКИ ПАПОК со смещением вправо по уровням вложенности
-
-@mixin cell-level {
-  display: flex;
-  position: relative;
-  height: $tr-height;
-}
-.level-1 {
-  @include cell-level;
-}
-.level-2 {
-  @include cell-level;
-  padding-left: $shift;
-}
-.level-3 {
-  @include cell-level;
-  padding-left: $shift * 2;
-}
-
-// БОКОВЫЕ ВЕРТИКАЛЬНЫЕ ЛИНИИ ПАПОК 2-го и 3-го уровней
-
-@mixin vertical-line {
-  position: absolute;
-  top: -$vertical-shift;
-  left: $half-icon;
-  z-index: 0;
-  width: 1px;
-  height: $tr-height * 1.5;
-  background-color: color.$primary-light;
-}
-
-.folder-vertical-lines {
-  @include vertical-line;
-
-  [data-folder='child-last'] & {
-    height: $tr-height;
-  }
-  .level-1 & {
-    display: none;
-  }
-  .level-3 & {
-    left: $half-icon + $shift;
-  }
-}
-
-.folder-horizontal-lines {
-  position: absolute;
-  bottom: $tr-height / 2 - 2px;
-  left: $half-icon;
-  z-index: 0;
-  width: 20px;
-  height: 1px;
-  background-color: color.$primary-light;
-
-  .level-1 & {
-    display: none;
-  }
-  .level-3 & {
-    left: $half-icon + $shift;
+.table-row {
+  &:hover :not([data-cell='icons']) {
+    cursor: pointer;
   }
 }

@@ -1,0 +1,107 @@
+@use '../../../../styles/shared/colors' as color;
+@use '../TableRow.styles.scss' as table;
+
+$icon-font-size: 16px;
+$half-icon: calc($icon-font-size / 2);
+$shift: calc($icon-font-size + 4px);
+$vertical-shift: calc(table.$tr-height / 2 - 2px);
+
+.icon {
+  z-index: 100;
+  align-self: center;
+  font-size: $icon-font-size;
+}
+
+//  ИКОНКИ ПАПОК со смещением вправо по уровням вложенности
+@mixin cell-level {
+  display: flex;
+  position: relative;
+  height: table.$tr-height;
+}
+.level-1 {
+  @include cell-level;
+}
+.level-2 {
+  @include cell-level;
+  padding-left: $shift;
+}
+.level-3 {
+  @include cell-level;
+  padding-left: $shift * 2;
+}
+
+// РАСШИРЕННЫЕ ИКОНКИ
+.icons-extended {
+  & .icon {
+    margin-left: 7px;
+  }
+}
+
+.icons-area {
+  display: flex;
+  align-self: center;
+  position: inherit;
+  padding: 6px;
+  margin-left: -6px;
+  border-radius: 6px;
+
+  & .icons-extended {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.5s ease-out;
+  }
+
+  &:hover {
+    background-color: color.$grey;
+    transition: background-color 0.2s;
+    .icons-extended {
+      display: inherit;
+      visibility: visible;
+      opacity: 1;
+      transition: visibility 0s, opacity 0.5s ease-out;
+    }
+  }
+}
+
+// БОКОВЫЕ ВЕРТИКАЛЬНЫЕ ЛИНИИ ПАПОК 2-го и 3-го уровней
+
+@mixin vertical-line {
+  position: absolute;
+  top: -$vertical-shift;
+  left: $half-icon;
+  z-index: 0;
+  width: 1px;
+  height: table.$tr-height * 1.5;
+  background-color: color.$primary-light;
+}
+
+.folder-vertical-lines {
+  @include vertical-line;
+
+  [data-folder='child-last'] & {
+    height: table.$tr-height;
+  }
+  .level-1 & {
+    display: none;
+  }
+  .level-3 & {
+    left: $half-icon + $shift;
+  }
+}
+
+.folder-horizontal-lines {
+  position: absolute;
+  bottom: calc(table.$tr-height / 2 - 2px);
+  left: $half-icon;
+  z-index: 0;
+  width: 20px;
+  height: 1px;
+  background-color: color.$primary-light;
+
+  .level-1 & {
+    display: none;
+  }
+  .level-3 & {
+    left: $half-icon + $shift;
+  }
+}

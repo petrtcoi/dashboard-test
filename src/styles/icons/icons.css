@@ -62,6 +62,7 @@
 }
 .icon-remove:before {
   content: "\e903";
+  color: #DF4444;
 }
 .icon-menu:before {
   content: "\e904";
