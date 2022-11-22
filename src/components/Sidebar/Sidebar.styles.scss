@@ -3,7 +3,7 @@
 
 .sidebar {
   position: absolute;
-  display: flexbox;
+  display: flex;
   height: 100%;
   flex-grow: 1;
   padding: 0;
@@ -25,10 +25,12 @@ ul.sidebar__projects-list {
     padding-bottom: 8px;
     padding-left: dm.$left-navbar-padding-left;
   }
+
   & > li[data-selected='true'] {
     background-color: color.$primary-light;
   }
 }
+
 .sidebar__projects-list__bullet {
   font-size: 16px;
   margin-right: 17px;
