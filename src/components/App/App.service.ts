@@ -3,23 +3,19 @@ import * as api from './../../api'
 
 import { isApiError } from '../../api/typings/api.type'
 import { WorkGetDto, WorkGetListDto } from '../../typescript/work.type'
+import { useAppDispatch } from '../../redux/hooks'
+import { fetchAllWorks, setFetchedStatus } from '../../redux/slices/works'
 
 
-export const useFetchWorks = (): [works: WorkGetListDto, errorMessage: string] => {
 
-  const [works, setWorks] = React.useState<WorkGetDto[]>([])
-  const [errorMessage, setErrorMessage] = React.useState<string>('')
+export const useFetchData = () => {
+  const dispatch = useAppDispatch()
 
   React.useEffect(() => {
     (async () => {
-      const result = await api.row.getList()
-      if (isApiError(result)) {
-        setErrorMessage(result.error)
-        return
-      }
-      setWorks(result)
+      await dispatch(fetchAllWorks())
+      dispatch(setFetchedStatus(true))
     })()
   }, [])
-
-  return [works, errorMessage]
 }
+
