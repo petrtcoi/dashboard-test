@@ -8,29 +8,27 @@ import { WorkId } from "../../../../typescript/work.type"
 export const removeWork = createAsyncThunk(
   'works/remove',
   async (workId: WorkId) => {
-    await api.row.remove(workId)
+    if (workId >= 0) await api.row.remove(workId)
     return workId
   }
- 
+
 )
 
 
 export const removeWorkWithChild = (
   state: WorksState,
-  workId: WorkId 
+  workId: WorkId
 ) => {
   const byIdList = current(state.byId)
   const work = byIdList[workId]
   if (!work) throw new Error('Не получилось найти работу')
   const toDeleteIds = getChildIds(work.id, byIdList)
-
-  state.ids = state.ids.filter(x => !(x in toDeleteIds))
-  toDeleteIds.forEach(toDeleteId => {  delete state.byId[toDeleteId]  })
+  console.log(workId, toDeleteIds)
+  state.ids = state.ids.filter(x => !([...toDeleteIds, workId].includes(x)))
+  toDeleteIds.forEach(toDeleteId => { delete state.byId[toDeleteId] })
 
   return state
 }
-
-
 
 
 

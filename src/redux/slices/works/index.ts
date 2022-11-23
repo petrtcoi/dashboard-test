@@ -1,6 +1,6 @@
-import { createAsyncThunk, createSlice, current } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { WorkCreateDto, Work,} from '../../../typescript/work.type'
+import { WorkCreateDto, Work, } from '../../../typescript/work.type'
 
 import { removeWorkWithChild, fetchAllWorks, preCreate as preCreateMethod } from './methods'
 import { removeWork } from './methods/remove'
@@ -13,10 +13,12 @@ export * from './methods'
 export type WorksState = {
   byId: { [keyId: string]: Work }
   ids: number[]
+  fetched: boolean
 }
 const initialState: WorksState = {
   byId: {},
-  ids: []
+  ids: [],
+  fetched: false
 }
 
 
@@ -36,7 +38,9 @@ export const worksSlice = createSlice({
   name: 'works',
   initialState,
   reducers: {
-
+    setFetchedStatus: (state, action: PayloadAction<boolean>) => {
+      state.fetched = action.payload
+    },
     preCreate: preCreateMethod,
     update: (state) => {
       console.log(state)
@@ -59,6 +63,6 @@ export const worksSlice = createSlice({
   }
 })
 
-export const { preCreate, update } = worksSlice.actions
+export const { preCreate, update, setFetchedStatus } = worksSlice.actions
 
 export default worksSlice.reducer

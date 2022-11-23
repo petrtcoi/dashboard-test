@@ -6,7 +6,7 @@ import { getEmptyWork } from "../utils/getEmptyWork"
 export const preCreate = (
   state: WorksState,
   action: PayloadAction<{
-    prevNode: WorkId,
+    prevNode: WorkId | null,
     nextNode: WorkId | null,
     parentId: WorkParentId,
     level: WorkLevel
@@ -18,7 +18,9 @@ export const preCreate = (
   if (action.payload.nextNode === null) {
     const prevNodeIndex = idList.findIndex(x => ((x === action.payload.prevNode)))
     const byIdObject = current(state.byId)
-    const prevNodeLevel = byIdObject[action.payload.prevNode]._meta_.level
+
+    const prevNodeLevel = action.payload.prevNode === null ? 1 : byIdObject[action.payload.prevNode]._meta_.level
+
     const nextSibligIndex = idList.findIndex((x, index) => {
       if (index < prevNodeIndex) return false
       return byIdObject[x]._meta_.level === prevNodeLevel
@@ -35,6 +37,6 @@ export const preCreate = (
   }
 
   state.byId[work.id] = work
-  state.byId[action.payload.prevNode]._meta_.nextNode = work.id
+  if (action.payload.prevNode !== null) state.byId[action.payload.prevNode]._meta_.nextNode = work.id
 }
 

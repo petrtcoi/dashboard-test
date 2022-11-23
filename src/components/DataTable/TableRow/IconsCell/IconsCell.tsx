@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAppDispatch } from '../../../../redux/hooks'
-import { Work, WorkId, WorkMeta } from '../../../../typescript/work.type'
+import { getNextLevel, isWorkLevelCorrect, Work, WorkId, WorkMeta } from '../../../../typescript/work.type'
 
 import './IconsCell.styles.scss'
 import { useAppSelector } from '../../../../redux/hooks/index'
@@ -25,8 +25,7 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
 
 
   const iconThisLevel = () => (
-    <div
-      role='button'
+    <button
       className={ `icon icon-level-${props.meta.level}` }
       onClick={ () => {
         dispatch(preCreate({
@@ -43,20 +42,24 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
   const iconNextLevel = () => props.meta.level === 3 ?
     null :
     (
-      <div
-        role='button'
+      <button
+        disabled={true}
         className={ `icon icon-level-${props.meta.level + 1}` }
-      // onClick={ () => dispatch(preCreate({ 
-      //   parentId: props.workId, 
-      //   afterWorkId: props.workId,
-      //   // @ts-ignore
-      //   level: level + 1 
-      // })) }
+        onClick={ () => {
+          const nextLevel = getNextLevel(props.meta.level)
+          if (!isWorkLevelCorrect(nextLevel)) return
+          dispatch(preCreate({
+            prevNode: props.workId,
+            nextNode: props.meta.nextNode,
+            parentId: props.meta.parentNode,
+            level: nextLevel
+          }))
+        }
+        }
       />)
 
 
-  const iconRemove = () => <div
-    role="btton"
+  const iconRemove = () => <button
     className={ `icon icon-remove` }
     onClick={ () => dispatch(removeWork(props.workId)) }
 

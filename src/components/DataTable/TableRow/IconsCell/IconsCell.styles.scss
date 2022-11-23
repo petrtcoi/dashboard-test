@@ -7,9 +7,17 @@ $shift: calc($icon-font-size + 4px);
 $vertical-shift: calc(table.$tr-height / 2 - 2px);
 
 .icon {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
   z-index: 100;
-  align-self: center;
   font-size: $icon-font-size;
+  &:disabled {
+    filter: saturate(10%) brightness(50%);
+  }
+  &:hover:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 //  ИКОНКИ ПАПОК со смещением вправо по уровням вложенности
@@ -48,7 +56,9 @@ $vertical-shift: calc(table.$tr-height / 2 - 2px);
   & .icons-extended {
     visibility: hidden;
     opacity: 0;
+    transition-delay: opacity 0.5s;
     transition: visibility 0s, opacity 0.5s ease-out;
+    
   }
 
   &:hover {
