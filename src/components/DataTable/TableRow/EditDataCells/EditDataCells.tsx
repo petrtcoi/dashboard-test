@@ -1,22 +1,13 @@
-import React, { KeyboardEvent } from 'react'
-import { useForm } from 'react-hook-form'
-import { WorkWithMeta } from '../../DataTable.types'
+import React from 'react'
+import { Work } from '../../../../typescript/work.type'
+import { connectUseForm } from './EditDataCells.service'
 import './EditDataCells.styles.scss'
 
-type EditDataCellsProps = { work: WorkWithMeta }
+type EditDataCellsProps = { work: Work }
 
 const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
 
-  const { register, handleSubmit, getValues } = useForm({
-    defaultValues: {
-      rowName: props.work.rowName,
-      salary: props.work.salary,
-      materials: props.work.materials,
-      overheads: props.work.overheads,
-      estimatedProfit: props.work.estimatedProfit,
-    }
-  })
-
+  const {register, getValues} = connectUseForm(props.work)
 
 
 
@@ -25,7 +16,6 @@ const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
       if (event.key !== 'Enter') return
       event.preventDefault()
       console.log(getValues())
-
     }
     document.addEventListener('keydown', keyDownHandler)
     return () => {
