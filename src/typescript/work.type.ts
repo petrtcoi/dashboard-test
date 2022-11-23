@@ -17,7 +17,9 @@ type Work = {
   supportCosts: number,
 }
 
-export type WorkCreateDto = Work
+export type WorkCreateDto = Pick<Work, 
+'parentId' | 'rowName' | 'salary' | 'materials' | 'overheads' | 'estimatedProfit'>
+
 export type WorkGetDto = Work & {
   total: number
   child: WorkGetDto[]

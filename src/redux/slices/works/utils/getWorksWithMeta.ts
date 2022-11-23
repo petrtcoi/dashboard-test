@@ -31,7 +31,7 @@ function unpackWork(work: WorkGetDto, level: SomeWorkLevel): WorkWithMeta[] {
         return (
           (
             (index + 1) === workList.length ||
-            work._meta_.level === workList[index - 1]?._meta_?.level
+            workList[index + 1]._meta_.level !== work._meta_.level
           )
             ?
             { ...work, _meta_: { ...work._meta_, isLastChild: true } }

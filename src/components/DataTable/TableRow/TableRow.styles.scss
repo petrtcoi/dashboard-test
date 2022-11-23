@@ -3,12 +3,18 @@
 $tr-height: 60px;
 $td-padding-left: 12px;
 
+
+
 tr {
   height: $tr-height;
+  max-height: $tr-height;
+  overflow: hidden;
   border-bottom: 1px solid color.$grey;
 }
 td {
   padding-left: $td-padding-left;
+  max-height: $tr-height;
+  height: $tr-height;
 }
 
 .table-row {

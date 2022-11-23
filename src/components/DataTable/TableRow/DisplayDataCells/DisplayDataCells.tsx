@@ -6,7 +6,7 @@ type DisplayDataCellsProps = { work: WorkWithMeta }
 const DisplayDataCells: React.FC<DisplayDataCellsProps> = (props) => {
   return (
     <>
-      <td>{ props.work.rowName }</td>
+      <td style={{overflow: "hidden", height: "40px"}}>{ props.work.rowName }</td>
       <td>{ props.work.salary.toLocaleString() }</td>
       <td>{ props.work.materials.toLocaleString() }</td>
       <td>{ props.work.overheads.toLocaleString() }</td>
