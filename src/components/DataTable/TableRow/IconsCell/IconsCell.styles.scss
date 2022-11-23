@@ -75,6 +75,23 @@ $vertical-shift: calc(table.$tr-height / 2 - 2px);
   background-color: color.$primary-light;
 }
 
+.line-last-child {
+  @include vertical-line;
+  height: table.$tr-height;
+  .level-3 & {
+    left: $half-icon + $shift;
+  }
+}
+.line-child {
+  @include vertical-line;
+  .level-3 & {
+    left: $half-icon + $shift;
+  }
+}
+.line-2nd {
+  @include vertical-line;
+}
+
 .folder-vertical-lines {
   @include vertical-line;
 
@@ -89,7 +106,7 @@ $vertical-shift: calc(table.$tr-height / 2 - 2px);
   }
 }
 
-.folder-horizontal-lines {
+.horizontal-line {
   position: absolute;
   bottom: calc(table.$tr-height / 2 - 2px);
   left: $half-icon;
@@ -97,7 +114,6 @@ $vertical-shift: calc(table.$tr-height / 2 - 2px);
   width: 20px;
   height: 1px;
   background-color: color.$primary-light;
-
   .level-1 & {
     display: none;
   }

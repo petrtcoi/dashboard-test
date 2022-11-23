@@ -16,7 +16,6 @@ export const App = () => {
   const dispatch = useAppDispatch()
 
   React.useEffect(() => {
-    console.log('HEY')
     dispatch(fetchAllWorks())
   },[])
 

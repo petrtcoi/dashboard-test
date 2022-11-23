@@ -1,24 +1,27 @@
 import React from 'react'
-import { WorkWithMeta } from '../DataTable.types'
+import { useAppSelector } from '../../../redux/hooks'
+import { WorkId } from '../../../typescript/work.type'
 import { DisplayDataCells } from './DisplayDataCells'
 import { EditDataCells } from './EditDataCells'
 import { IconsCell } from './IconsCell'
 import './TableRow.styles.scss'
 
 type TableRowProps = {
-  work: WorkWithMeta
+  workId: WorkId
 }
 
 const TableRow: React.FC<TableRowProps> = (props) => {
 
   const [editing, setEditing] = React.useState<boolean>(false)
+  const work = useAppSelector(state => state.works.byId[props.workId]) || null
+  if (work === null) return null
 
   return (
     <tr onDoubleClick={ () => setEditing(true) } className="table-row">
-      <IconsCell meta={ props.work._meta_ } parentId={ props.work.parentId } workId={ props.work.id } />
+      <IconsCell meta={ work._meta_ } parentId={ work._meta_.parentNode } workId={ work.id } />
       { editing ?
-        <EditDataCells work={ props.work } /> :
-        <DisplayDataCells work={ props.work } />
+        <EditDataCells work={ work } /> :
+        <DisplayDataCells work={ work } />
       }
     </tr>
 

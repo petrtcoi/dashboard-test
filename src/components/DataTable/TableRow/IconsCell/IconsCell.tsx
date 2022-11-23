@@ -1,44 +1,57 @@
 import React from 'react'
 import { useAppDispatch } from '../../../../redux/hooks'
-import { preCreate } from '../../../../redux/slices/works'
+import { Work, WorkId, WorkMeta } from '../../../../typescript/work.type'
 
-import { WorkMeta, WorkWithMeta } from '../../DataTable.types'
 import './IconsCell.styles.scss'
+import { useAppSelector } from '../../../../redux/hooks/index'
+import useIsParentLastNode, { getNodeType } from './IconsCell.service'
+import { preCreate } from '../../../../redux/slices/works'
 
 type IconsCellProps = {
   meta: WorkMeta
-  parentId: WorkWithMeta['parentId']
-  workId: WorkWithMeta['id']
+  workId: Work['id']
 }
 
 const IconsCell: React.FC<IconsCellProps> = (props) => {
 
   const dispatch = useAppDispatch()
+  const nodeType = getNodeType(props.meta.nextNode, props.meta.level)
+  let isParentNotLastChild = false
+  if (props.meta.level === 3) {
+    const parent = useAppSelector(state => state.works.byId[props.meta.parentNode as WorkId])
+    if (parent._meta_.nextNode !== null) isParentNotLastChild = true
+  }
 
-  const level = props.meta.level
-  const folderType = level === 1 ? '' :
-    props.meta.isLastChild ? 'child-last' : 'child'
 
   const iconThisLevel = () => (
     <div
       role='button'
-      className={ `icon icon-level-${level}` }
-      onClick={ () => dispatch(preCreate({ afterWorkId: props.workId, parentId: props.parentId, level: level })) }
+      className={ `icon icon-level-${props.meta.level}` }
+      onClick={ () => {
+        console.log(props.workId)
+        dispatch(preCreate({
+          prevNode: props.workId,
+          nextNode: props.meta.nextNode,
+          parentId: props.meta.parentNode,
+          level: props.meta.level
+        }))
+      }
+      }
     />
   )
 
-  const iconNextLevel = () => level === 3 ?
+  const iconNextLevel = () => props.meta.level === 3 ?
     null :
     (
       <div
         role='button'
-        className={ `icon icon-level-${level + 1}` }
-        onClick={ () => dispatch(preCreate({ 
-          parentId: props.workId, 
-          afterWorkId: props.workId,
-          // @ts-ignore
-          level: level + 1 
-        })) }
+        className={ `icon icon-level-${props.meta.level + 1}` }
+      // onClick={ () => dispatch(preCreate({ 
+      //   parentId: props.workId, 
+      //   afterWorkId: props.workId,
+      //   // @ts-ignore
+      //   level: level + 1 
+      // })) }
       />)
 
 
@@ -47,10 +60,19 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
 
   return (
     <td data-cell='icons'>
-      <div className={ `level-${level}` } data-folder={ folderType }>
+      <div className={ `level-${props.meta.level}` } data-folder={ nodeType }>
+        {/* <div className='folder-vertical-lines' /> */ }
+        <div className='horizontal-line' />
 
-        <div className='folder-vertical-lines' />
-        <div className='folder-horizontal-lines' />
+        { nodeType === 'child-last' &&
+          <div className='line-last-child' />
+        }
+        { nodeType === 'child' &&
+          <div className='line-child' />
+        }
+        { isParentNotLastChild &&
+          <div className='line-2nd' />
+        }
 
         <div className='icons-area'>
           { iconThisLevel() }
@@ -67,4 +89,3 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
 }
 
 export { IconsCell }
-

@@ -14,13 +14,13 @@ type DataTableProps = {
 
 const DataTable: React.FC<DataTableProps> = (_props) => {
 
-  const works = useAppSelector(state => state.works.works)
+  const worksIds = useAppSelector(state => state.works.ids)
 
   return (
     <table className='data-table'>
       <TableHeader />
       <tbody>
-        { works.map(work => <TableRow key={ work.id } work={ work } />) }
+        { worksIds.map(workId => <TableRow key={ workId } workId={ workId } />) }
       </tbody>
     </table>
   )

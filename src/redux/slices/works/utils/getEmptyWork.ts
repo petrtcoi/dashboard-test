@@ -1,26 +1,34 @@
-import { WorkId, WorkMeta, WorkWithMeta } from "../../../../components/DataTable/DataTable.types"
+import { Work, WorkId, WorkLevel, WorkParentId, WorkStatus } from "../../../../typescript/work.type"
 
-export function getEmptyWork(parentId: WorkWithMeta['parentId'], level: WorkMeta['level']): WorkWithMeta {
+export function getEmptyWork(props: {
+  parentId: WorkParentId,
+  level: WorkLevel,
+  prevNode: WorkId | null,
+  nextNode: WorkId | null
+}): Work {
 
   return ({
-    id: Math.floor(Math.random() * -100),
-    parentId: parentId,
-    rowName: 'Название работы',
-    materials: 0,
+    id: -Date.now(),
+    rowName: 'Новая работа',
     overheads: 0,
     salary: 0,
+    materials: 0,
     estimatedProfit: 0,
-    machineOperatorSalary: 0,
+
     equipmentCosts: 0,
+    machineOperatorSalary: 0,
     mainCosts: 0,
     mimExploitation: 0,
     supportCosts: 0,
     total: 0,
-    child: [],
+
     _meta_: {
-      level,
-      hasChild: false,
-      isLastChild: level === 1 ? false : true
+      parentNode: props.parentId,
+      level: props.level,
+      prevNode: props.prevNode,
+      nextNode: props.nextNode,
+      childNodes: [],
+      status: WorkStatus.Creating
     }
   })
 }
