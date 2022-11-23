@@ -1,7 +1,10 @@
-import { WorkGetDto } from '../../typescript/work.type'
+import { WorkCreateDto, WorkGetDto } from '../../typescript/work.type'
 
+export enum WorkId {
+  Ghost = -9000
+}
 
-export type WorkWithMeta = WorkGetDto & { _meta_: WorkMeta }
+export type WorkWithMeta = WorkGetDto & { _meta_: WorkMeta } & { parentId: number | null }
 
 export type WorkMeta = {
   level: WorkLevel
@@ -10,4 +13,8 @@ export type WorkMeta = {
 }
 export type WorkLevel = 1 | 2 | 3
 export type SomeWorkLevel = WorkLevel | -1
+
+
+
+
 

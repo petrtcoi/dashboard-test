@@ -31,7 +31,7 @@ export const create = async (work: WorkCreateDto) => {
     total: 0,
   }
 
-  const result = await httpClient.get('/create')
+  const result = await httpClient.post('/create', filledWork)
   if (result.status !== 200) throw new Error('Пользователь не создан')
    return result.data.current
 }

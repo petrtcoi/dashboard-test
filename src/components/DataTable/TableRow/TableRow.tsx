@@ -15,7 +15,7 @@ const TableRow: React.FC<TableRowProps> = (props) => {
 
   return (
     <tr onDoubleClick={ () => setEditing(true) } className="table-row">
-      <IconsCell meta={ props.work._meta_ } />
+      <IconsCell meta={ props.work._meta_ } parentId={ props.work.parentId } workId={ props.work.id } />
       { editing ?
         <EditDataCells work={ props.work } /> :
         <DisplayDataCells work={ props.work } />

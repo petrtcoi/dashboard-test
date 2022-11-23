@@ -2,8 +2,8 @@ import Ajv, { JSONSchemaType } from 'ajv'
 const ajv = new Ajv({ allErrors: true })
 
 type Work = {
-  id: number,
-  parentId: number,
+  id: number ,
+  parentId: number | null,
   rowName: string,
 
   equipmentCosts: number,
@@ -17,10 +17,9 @@ type Work = {
   supportCosts: number,
 }
 
-export type WorkCreateDto = Pick<Work, 
-'parentId' | 'rowName' | 'salary' | 'materials' | 'overheads' | 'estimatedProfit'>
+export type WorkCreateDto = Work
 
-export type WorkGetDto = Work & {
+export type WorkGetDto = Omit<Work, 'parentId'> & {
   total: number
   child: WorkGetDto[]
 }
@@ -35,7 +34,6 @@ const workGetSchema: JSONSchemaType<WorkGetDto> = {
   type: 'object',
   properties: {
     id: { type: 'integer' },
-    parentId: { type: 'integer' },
     rowName: { type: 'string' },
 
     equipmentCosts: { type: 'number' },
