@@ -1,10 +1,9 @@
-import { WorkGetDto, validateGetList, WorkCreateDto } from "../../typescript/work.type"
+import { WorkGetDto, validateGetList, WorkCreateDto, WorkId } from "../../typescript/work.type"
 import { httpClient } from "../httpClient"
 import { getErrorResultString } from "../utils/getErrorResult"
 
 
 export const getList = async (): Promise<WorkGetDto[]> => {
-
   const result = await httpClient.get('/list')
   if (result.status !== 200) throw new Error(getErrorResultString(result))
 
@@ -13,14 +12,18 @@ export const getList = async (): Promise<WorkGetDto[]> => {
     console.log(validateGetList.errors)
     validateGetList('Ошибка валидации входящих данных, см console')
   }
-
   return result.data
+}
 
+
+export const remove = async (workId: WorkId) => {
+  const result = await httpClient.delete(`/${workId}/delete`)
+  if (result.status !== 200) throw new Error('Пользователь не удален')
+  return 
 }
 
 
 export const create = async (work: WorkCreateDto) => {
-
   const filledWork: Omit<WorkGetDto, 'id' | 'child'> = {
     ...work,
     equipmentCosts: 0,
@@ -33,5 +36,5 @@ export const create = async (work: WorkCreateDto) => {
 
   const result = await httpClient.post('/create', filledWork)
   if (result.status !== 200) throw new Error('Пользователь не создан')
-   return result.data.current
+  return result.data.current
 }

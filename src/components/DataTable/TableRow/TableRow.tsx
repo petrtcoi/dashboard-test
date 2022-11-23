@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAppSelector } from '../../../redux/hooks'
-import { WorkId } from '../../../typescript/work.type'
+import { WorkId, WorkStatus } from '../../../typescript/work.type'
 import { DisplayDataCells } from './DisplayDataCells'
 import { EditDataCells } from './EditDataCells'
 import { IconsCell } from './IconsCell'
@@ -18,8 +18,8 @@ const TableRow: React.FC<TableRowProps> = (props) => {
 
   return (
     <tr onDoubleClick={ () => setEditing(true) } className="table-row">
-      <IconsCell meta={ work._meta_ } parentId={ work._meta_.parentNode } workId={ work.id } />
-      { editing ?
+      <IconsCell meta={ work._meta_ } workId={ work.id } />
+      { work._meta_.status === WorkStatus.Creating ?
         <EditDataCells work={ work } /> :
         <DisplayDataCells work={ work } />
       }

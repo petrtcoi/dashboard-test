@@ -4,8 +4,9 @@ import { Work, WorkId, WorkMeta } from '../../../../typescript/work.type'
 
 import './IconsCell.styles.scss'
 import { useAppSelector } from '../../../../redux/hooks/index'
-import useIsParentLastNode, { getNodeType } from './IconsCell.service'
+import { getNodeType } from './IconsCell.service'
 import { preCreate } from '../../../../redux/slices/works'
+import { removeWork } from '../../../../redux/slices/works/methods/remove'
 
 type IconsCellProps = {
   meta: WorkMeta
@@ -28,7 +29,6 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
       role='button'
       className={ `icon icon-level-${props.meta.level}` }
       onClick={ () => {
-        console.log(props.workId)
         dispatch(preCreate({
           prevNode: props.workId,
           nextNode: props.meta.nextNode,
@@ -55,7 +55,12 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
       />)
 
 
-  const iconRemove = () => <div className={ `icon icon-remove` } />
+  const iconRemove = () => <div
+    role="btton"
+    className={ `icon icon-remove` }
+    onClick={ () => dispatch(removeWork(props.workId)) }
+
+  />
 
 
   return (
