@@ -6,14 +6,13 @@ import { WorkGetDto, Work, WorkParentId, WorkLevel, WorkStatus, getNextLevel, is
  *  Перобразует JSON работ в плоский массив, дополняя работы мета-данными
  *  Работы, которые выходят за допустимый уровень вложенности - игнорируются
  */
-export const handleListFromDb = (works: WorkGetDto[]): WorksState => {
+export const handleListFromDb = (works: WorkGetDto[]): Pick<WorksState, 'byId'> => {
 
   return {
-    ids: works.map(getWorkIds).flat(),
     byId: works
       .map(getUnpackWorkListWithLevel(1, null))
       .flat()
-      .reduce((acc, work) =>  Object.assign(acc, { [work.id]: work }), Object.create(null))
+      .reduce((acc, work) => Object.assign(acc, { [work.id]: work }), Object.create(null))
   }
 
 }
@@ -26,7 +25,7 @@ type Props = {
   nextNode: Work['_meta_']['nextNode']
 }
 
-function getWorkIds (work: WorkGetDto): number[] {
+function getWorkIds(work: WorkGetDto): number[] {
   return [work.id, ...work.child.map(getWorkIds)].flat()
 }
 
@@ -36,13 +35,13 @@ function unpackWork(props: Props): Work[] {
   const nextLevel = getNextLevel(props.level)
   if (!isWorkLevelCorrect(nextLevel)) return [work]
   const unpackWorkListLevel = getUnpackWorkListWithLevel(nextLevel, work.id)
- 
+
   return [work, ...props.workDto.child.map(unpackWorkListLevel)].flat()
 }
 
 
 function getUnpackWorkListWithLevel(level: WorkLevel, parentNode: WorkParentId) {
-  return function unpachWorkList(work: WorkGetDto, index: number, childWorkList: WorkGetDto[]) {  
+  return function unpachWorkList(work: WorkGetDto, index: number, childWorkList: WorkGetDto[]) {
     return unpackWork({
       workDto: work,
       level: level,
