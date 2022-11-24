@@ -9,10 +9,8 @@ export const useCreateFirstWork = (worksQnty: number, fetched: boolean) => {
   React.useEffect(() => {
     if (fetched === false || worksQnty > 0) return
     dispatch(preCreate({
-      prevNode: null,
-      nextNode: null,
-      parentId: null,
-      level: 1
+      initWorkId: null,
+      createType: 'child'
     }))
   }, [fetched, worksQnty])
 }

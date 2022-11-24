@@ -1,12 +1,16 @@
 import React from 'react'
-import { useAppDispatch } from '../../../../redux/hooks'
-import { getNextLevel, isWorkLevelCorrect, Work, WorkId, WorkMeta } from '../../../../typescript/work.type'
+import { Work, WorkId, WorkMeta, getNextLevel } from '../../../../typescript/work.type'
+
+import { getNodeType } from './IconsCell.service'
+import { FolderLines } from './components/folderLines'
+import { isNodeIsLastChild } from '../../../../redux/slices/works/utils/isNodeIsLastChild'
+import { isEmptyList } from '../../../../redux/slices/works/selectors/isEmptyList'
 
 import './IconsCell.styles.scss'
+import { AddWorkButton } from './components/AddWorkButton'
+import { RemoveWorkButton } from './components/RemoveWorkButton'
 import { useAppSelector } from '../../../../redux/hooks/index'
-import { getNodeType } from './IconsCell.service'
-import { preCreate } from '../../../../redux/slices/works'
-import { removeWork } from '../../../../redux/slices/works/methods/remove'
+
 
 type IconsCellProps = {
   meta: WorkMeta
@@ -15,81 +19,23 @@ type IconsCellProps = {
 
 const IconsCell: React.FC<IconsCellProps> = (props) => {
 
-  const dispatch = useAppDispatch()
   const nodeType = getNodeType(props.meta.nextNode, props.meta.level)
-  let isParentNotLastChild = false
-  if (props.meta.level === 3) {
-    const parent = useAppSelector(state => state.works.byId[props.meta.parentNode as WorkId])
-    if (parent._meta_.nextNode !== null) isParentNotLastChild = true
-  }
-
-
-  const iconThisLevel = () => (
-    <button
-      className={ `icon icon-level-${props.meta.level}` }
-      onClick={ () => {
-        dispatch(preCreate({
-          prevNode: props.workId,
-          nextNode: props.meta.nextNode,
-          parentId: props.meta.parentNode,
-          level: props.meta.level
-        }))
-      }
-      }
-    />
-  )
-
-  const iconNextLevel = () => props.meta.level === 3 ?
-    null :
-    (
-      <button
-        disabled={true}
-        className={ `icon icon-level-${props.meta.level + 1}` }
-        onClick={ () => {
-          const nextLevel = getNextLevel(props.meta.level)
-          if (!isWorkLevelCorrect(nextLevel)) return
-          dispatch(preCreate({
-            prevNode: props.workId,
-            nextNode: props.meta.nextNode,
-            parentId: props.meta.parentNode,
-            level: nextLevel
-          }))
-        }
-        }
-      />)
-
-
-  const iconRemove = () => <button
-    className={ `icon icon-remove` }
-    onClick={ () => dispatch(removeWork(props.workId)) }
-
-  />
+  const isParentNotLastChild = props.meta.parentNode === null ? false : isNodeIsLastChild(props.meta.parentNode) && props.meta.level === 3
+  const noWorks = isEmptyList()
 
 
   return (
     <td data-cell='icons'>
       <div className={ `level-${props.meta.level}` } data-folder={ nodeType }>
-        {/* <div className='folder-vertical-lines' /> */ }
-        <div className='horizontal-line' />
-
-        { nodeType === 'child-last' &&
-          <div className='line-last-child' />
-        }
-        { nodeType === 'child' &&
-          <div className='line-child' />
-        }
-        { isParentNotLastChild &&
-          <div className='line-2nd' />
-        }
+        <FolderLines nodeType={nodeType} isParentNotLastChild={isParentNotLastChild}/>
 
         <div className='icons-area'>
-          { iconThisLevel() }
+          <AddWorkButton meta={ props.meta } workId={ props.workId } />
           <div className='icons-extended'>
-            { iconNextLevel() }
-            { iconRemove() }
+            <AddWorkButton nextLevel meta={ props.meta } workId={ props.workId } />
+            <RemoveWorkButton workId={ props.workId } disabled={ noWorks } />
           </div>
         </div>
-
       </div>
     </td>
   )

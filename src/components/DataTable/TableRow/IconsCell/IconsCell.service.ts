@@ -1,6 +1,4 @@
-import React from "react"
-import { useAppSelector } from "../../../../redux/hooks"
-import { Work, WorkId, WorkLevel, WorkParentId } from "../../../../typescript/work.type"
+import { Work, WorkLevel } from "../../../../typescript/work.type"
 
 
 type NodeType = '' | 'child-last' | 'child'

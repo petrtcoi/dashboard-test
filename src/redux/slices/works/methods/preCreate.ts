@@ -1,42 +1,78 @@
 import { current, PayloadAction } from "@reduxjs/toolkit"
 import { WorksState } from ".."
-import { WorkId, WorkLevel, WorkParentId } from "../../../../typescript/work.type"
-import { getEmptyWork } from "../utils/getEmptyWork"
+import { getNextLevel, isWorkLevelCorrect, WorkId, WorkLevel, WorkMeta, WorkParentId, WorkStatus, SomeWorkLevel } from '../../../../typescript/work.type'
+import { getEmptyWork, GetEmptyWorkProps } from "../utils/getEmptyWork"
 
+export type CreateMode = 'sibling' | 'child'
 export const preCreate = (
   state: WorksState,
   action: PayloadAction<{
-    prevNode: WorkId | null,
-    nextNode: WorkId | null,
-    parentId: WorkParentId,
-    level: WorkLevel
+    initWorkId: WorkId | null
+    createType: CreateMode
   }>
 ) => {
-  let work = getEmptyWork(action.payload)
-  const idList = current(state.ids)
+  const props = action.payload
+  const currState = current(state)
 
-  if (action.payload.nextNode === null) {
-    const prevNodeIndex = idList.findIndex(x => ((x === action.payload.prevNode)))
-    const byIdObject = current(state.byId)
+  let newWorkMeta: WorkMeta
 
-    const prevNodeLevel = action.payload.prevNode === null ? 1 : byIdObject[action.payload.prevNode]._meta_.level
-
-    const nextSibligIndex = idList.findIndex((x, index) => {
-      if (index < prevNodeIndex) return false
-      return byIdObject[x]._meta_.level === prevNodeLevel
-    })
-    if (nextSibligIndex === -1) {
-      state.ids.push(work.id)
-    } else {
-      state.ids.splice(nextSibligIndex + 1, 0, work.id)
+  if (props.initWorkId === null) {
+    const newWorkMeta: GetEmptyWorkProps = {
+      level: 1,
+      parentNode: props.initWorkId,
+      prevNode: null,
+      nextNode: null
     }
-
-  } else {
-    const insertBeforeIndex = idList.findIndex(x => ((x === action.payload.nextNode)))
-    state.ids.splice(insertBeforeIndex, 0, work.id)
+    const newWork = getEmptyWork(newWorkMeta)
+    state.byId[newWork.id] = newWork
+    return
   }
 
-  state.byId[work.id] = work
-  if (action.payload.prevNode !== null) state.byId[action.payload.prevNode]._meta_.nextNode = work.id
-}
+  const initWork = currState.byId[props.initWorkId]
 
+  if (props.createType === 'sibling') {
+
+
+    const newWorkMeta: GetEmptyWorkProps = {
+      level: initWork._meta_.level,
+      parentNode: initWork._meta_.parentNode,
+      prevNode: initWork.id,
+      nextNode: initWork._meta_.nextNode
+    }
+    const newWork = getEmptyWork(newWorkMeta)
+    state.byId[newWork.id] = newWork
+    state.byId[props.initWorkId]._meta_.nextNode = newWork.id
+
+
+    if (initWork._meta_.parentNode !== null) {
+      const childNodes = currState.byId[initWork._meta_.parentNode]._meta_.childNodes
+      const initWorkIndex = childNodes.findIndex(x => x === initWork.id)
+      state.byId[initWork._meta_.parentNode]._meta_.childNodes
+        .splice(initWorkIndex + 1, 0, newWork.id)
+    }
+    if (initWork._meta_.nextNode !== null) {
+      state.byId[initWork._meta_.nextNode]._meta_.prevNode = newWork.id
+    }
+  }
+
+  if (props.createType === 'child') {
+
+    const nextLevel = getNextLevel(initWork._meta_.level)
+    if (!isWorkLevelCorrect(nextLevel)) return
+
+    const newWorkMeta: GetEmptyWorkProps = {
+      level: nextLevel,
+      parentNode: initWork.id,
+      prevNode: null,
+      nextNode: initWork._meta_.childNodes[0] ?? null
+    }
+    const newWork = getEmptyWork(newWorkMeta)
+    state.byId[newWork.id] = newWork
+    state.byId[initWork.id]._meta_.childNodes.unshift(newWork.id)
+    if (initWork._meta_.childNodes[0]) {
+      state.byId[initWork._meta_.childNodes[0]]._meta_.prevNode = newWork.id
+    }
+  }
+
+
+}

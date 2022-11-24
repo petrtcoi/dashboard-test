@@ -17,7 +17,11 @@ const TableRow: React.FC<TableRowProps> = (props) => {
   if (work === null) return null
 
   return (
-    <tr onDoubleClick={ () => setEditing(true) } className="table-row">
+    <tr
+      key={ props.workId }
+      className="table-row"
+      onDoubleClick={ () => setEditing(true) }
+    >
       <IconsCell meta={ work._meta_ } workId={ work.id } />
       { work._meta_.status === WorkStatus.Creating ?
         <EditDataCells work={ work } /> :

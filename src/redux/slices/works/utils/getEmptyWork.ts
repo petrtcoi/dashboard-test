@@ -1,12 +1,13 @@
 import { Work, WorkId, WorkLevel, WorkParentId, WorkStatus } from "../../../../typescript/work.type"
 
-export function getEmptyWork(props: {
-  parentId: WorkParentId,
+export type GetEmptyWorkProps = {
+  parentNode: WorkParentId,
   level: WorkLevel,
   prevNode: WorkId | null,
   nextNode: WorkId | null
-}): Work {
+}
 
+export function getEmptyWork(props: GetEmptyWorkProps): Work {
   return ({
     id: -Date.now(),
     rowName: 'Новая работа',
@@ -23,7 +24,7 @@ export function getEmptyWork(props: {
     total: 0,
 
     _meta_: {
-      parentNode: props.parentId,
+      parentNode: props.parentNode,
       level: props.level,
       prevNode: props.prevNode,
       nextNode: props.nextNode,

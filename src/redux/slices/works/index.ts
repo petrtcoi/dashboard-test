@@ -12,12 +12,10 @@ export * from './methods'
 
 export type WorksState = {
   byId: { [keyId: string]: Work }
-  ids: number[]
   fetched: boolean
 }
 const initialState: WorksState = {
   byId: {},
-  ids: [],
   fetched: false
 }
 
@@ -47,12 +45,11 @@ export const worksSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchAllWorks.fulfilled, (_state, action) => {
-      return action.payload
+    builder.addCase(fetchAllWorks.fulfilled, (state, action) => {
+      state = {...state, ...action.payload}
     })
     builder.addCase(removeWork.fulfilled, (state, action) => {
       removeWorkWithChild(state, action.payload)
-      // return removeWorkWithChild(state, {workId: action})
     })
     // ,
     //   builder.addCase(createWork.fulfilled, (state, action) => {
