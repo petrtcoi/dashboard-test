@@ -1,40 +1,45 @@
-import { WorkGetDto, validateGetList, WorkCreateDto, WorkId } from "../../typescript/work.type"
+import * as R from "ramda"
+import { workDtoSchema, WorkGetDto, WorkGetListDto, WorkId } from "../../typescript/work.type"
 import { httpClient } from "../httpClient"
-import { getErrorResultString } from "../utils/getErrorResult"
+import { ApiErrorResut, isApiError } from "../typings/api.type"
 
 
-export const getList = async (): Promise<WorkGetDto[]> => {
-  const result = await httpClient.get('/list')
-  if (result.status !== 200) throw new Error(getErrorResultString(result))
 
-  result.data.every(validateGetList)
-  if (validateGetList.errors) {
-    console.log(validateGetList.errors)
-    validateGetList('Ошибка валидации входящих данных, см console')
-  }
+
+export const getList = async (): Promise<WorkGetListDto> => {
+  console.log('start')
+  const result = await httpClient.get<WorkGetListDto | ApiErrorResut>('/list')
+  console.log('result:', result)
+
+  if (isApiError(result.data)) throw new Error(`API / GETLIST : ${result.data.error}`)
+
+  console.log('not error API')
+
+  const isValid = result.data.every(work => {
+    const { error } = workDtoSchema.validate(work)
+    console.log('error: ', error)
+    return R.isNil(error)
+  })
+  console.log('isValid: ', isValid)
+
+  if (!isValid) throw new Error(`API / GETLIST : validations`)
+
   return result.data
 }
 
 
-export const remove = async (workId: WorkId) => {
-  const result = await httpClient.delete(`/${workId}/delete`)
-  if (result.status !== 200) throw new Error('Пользователь не удален')
-  return 
-}
 
 
-export const create = async (work: WorkCreateDto) => {
-  const filledWork: Omit<WorkGetDto, 'id' | 'child'> = {
-    ...work,
-    equipmentCosts: 0,
-    machineOperatorSalary: 0,
-    mainCosts: 0,
-    mimExploitation: 0,
-    supportCosts: 0,
-    total: 0,
-  }
 
-  const result = await httpClient.post('/create', filledWork)
-  if (result.status !== 200) throw new Error('Пользователь не создан')
-  return result.data.current
-}
+// export const remove = async (workId: WorkId) => {
+//   const result = await httpClient.delete(`/${workId}/delete`)
+//   if (result.status !== 200) throw new Error('Пользователь не удален')
+//   return
+// }
+
+
+// export const create = async (work: WorkCreateDto) => {
+//   const result = await httpClient.post('/create', work)
+//   if (result.status !== 200) throw new Error('Пользователь не создан')
+//   return result.data.current
+// }

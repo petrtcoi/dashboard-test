@@ -1,6 +1,6 @@
 import {WorkId } from '../../../../../typescript/work.type'
 import { useAppDispatch } from '../../../../../redux/hooks'
-import { removeWork } from "../../../../../redux/slices/works/methods/remove"
+import { removeWork } from "../../../../../redux/slices/works/functions/remove"
 
 
 type RemoveWorkButtonProps = { workId: WorkId, disabled?: boolean }

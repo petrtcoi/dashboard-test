@@ -1,45 +1,43 @@
-import React from 'react'
-import { Work, WorkId, WorkMeta, getNextLevel } from '../../../../typescript/work.type'
+// import React from 'react'
+// import { Work, WorkId, WorkMeta, getNextLevel } from '../../../../typescript/work.type'
 
-import { getNodeType } from './IconsCell.service'
-import { FolderLines } from './components/folderLines'
-import { isNodeIsLastChild } from '../../../../redux/slices/works/utils/isNodeIsLastChild'
-import { isEmptyList } from '../../../../redux/slices/works/selectors/isEmptyList'
+// import { getNodeType } from './IconsCell.service'
+// import { FolderLines } from './components/folderLines'
 
-import './IconsCell.styles.scss'
-import { AddWorkButton } from './components/AddWorkButton'
-import { RemoveWorkButton } from './components/RemoveWorkButton'
-import { useAppSelector } from '../../../../redux/hooks/index'
+// import './IconsCell.styles.scss'
+// import { AddWorkButton } from './components/AddWorkButton'
+// import { RemoveWorkButton } from './components/RemoveWorkButton'
+// import { useAppSelector } from '../../../../redux/hooks/index'
 
 
-type IconsCellProps = {
-  meta: WorkMeta
-  workId: Work['id']
-}
+// type IconsCellProps = {
+//   meta: WorkMeta
+//   workId: Work['id']
+// }
 
-const IconsCell: React.FC<IconsCellProps> = (props) => {
+// const IconsCell: React.FC<IconsCellProps> = (props) => {
 
-  const nodeType = getNodeType(props.meta.nextNode, props.meta.level)
-  const isParentNotLastChild = props.meta.parentNode === null ? false : isNodeIsLastChild(props.meta.parentNode) && props.meta.level === 3
-  const noWorks = isEmptyList()
+//   const nodeType = getNodeType(props.meta.nextNode, props.meta.level)
+//   const isParentNotLastChild = props.meta.parentNode === null ? false : isNodeIsLastChild(props.meta.parentNode) && props.meta.level === 3
+//   const noWorks = isEmptyList()
 
 
-  return (
-    <td data-cell='icons'>
-      <div className={ `level-${props.meta.level}` } data-folder={ nodeType }>
-        <FolderLines nodeType={nodeType} isParentNotLastChild={isParentNotLastChild}/>
+//   return (
+//     <td data-cell='icons'>
+//       <div className={ `level-${props.meta.level}` } data-folder={ nodeType }>
+//         <FolderLines nodeType={nodeType} isParentNotLastChild={isParentNotLastChild}/>
 
-        <div className='icons-area'>
-          <AddWorkButton meta={ props.meta } workId={ props.workId } />
-          <div className='icons-extended'>
-            <AddWorkButton nextLevel meta={ props.meta } workId={ props.workId } />
-            <RemoveWorkButton workId={ props.workId } disabled={ noWorks } />
-          </div>
-        </div>
-      </div>
-    </td>
-  )
+//         <div className='icons-area'>
+//           <AddWorkButton meta={ props.meta } workId={ props.workId } />
+//           <div className='icons-extended'>
+//             <AddWorkButton nextLevel meta={ props.meta } workId={ props.workId } />
+//             <RemoveWorkButton workId={ props.workId } disabled={ noWorks } />
+//           </div>
+//         </div>
+//       </div>
+//     </td>
+//   )
 
-}
+// }
 
-export { IconsCell }
+// export { IconsCell }

@@ -1,8 +1,17 @@
-export type ApiResultError = { error: string, status: number }
+import * as R from 'ramda'
+const isNotNil = R.complement(R.isNil)
 
-export type ApiResult<T> = T | ApiResultError
+export type ApiErrorResut = {
+  timestamp: number,
+  status: number,
+  error: string,
+  path: string
+}
 
-
-export function isApiError  (result: ApiResult<any>): result is ApiResultError  {
-  return result.error ? true : false
+export function isApiError(data: any): data is ApiErrorResut {
+  return (
+    isNotNil(data.error) &&
+    isNotNil(data.status) &&
+    data.status !== 200
+  )
 }

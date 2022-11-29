@@ -1,10 +1,7 @@
 import React from 'react'
-import * as api from './../../api'
 
-import { isApiError } from '../../api/typings/api.type'
-import { WorkGetDto, WorkGetListDto } from '../../typescript/work.type'
 import { useAppDispatch } from '../../redux/hooks'
-import { fetchAllWorks, setFetchedStatus } from '../../redux/slices/works'
+import { fetchAllWorks } from '../../redux/slices/works'
 
 
 
@@ -12,10 +9,18 @@ export const useFetchData = () => {
   const dispatch = useAppDispatch()
 
   React.useEffect(() => {
-    (async () => {
+    console.log('HELLO')
+    const update = async () => {
       await dispatch(fetchAllWorks())
-      dispatch(setFetchedStatus(true))
-    })()
+    }
+    update()
   }, [])
+
+  // React.useEffect(() => {
+  //   console.log('HEY')
+  // (async () => {
+  //   await dispatch(fetchAllWorks())
+  // })()
+  // }, [])
 }
 

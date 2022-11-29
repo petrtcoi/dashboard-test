@@ -11,14 +11,15 @@ export const App = () => {
 
   useFetchData()
 
-  return (
-    <div className='layout'>
-      <Header />
-      <main className="main-block">
-        <Sidebar projects={ projects } />
-        <DataTable />
-      </main>
-    </div>
+  return (<>TEST</>
+    // <div className='layout'>
+    //   loading...
+    //   {/* <Header />
+    //   <main className="main-block">
+    //     <Sidebar projects={ projects } />
+    //     <DataTable />
+    //   </main> */}
+    // </div>
   )
 }
 

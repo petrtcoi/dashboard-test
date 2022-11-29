@@ -22,11 +22,15 @@ const DataTable: React.FC<DataTableProps> = (_props) => {
 
   const [worksIds, setWorksIds] = React.useState<WorkId[]>([])
   React.useEffect(() => {
+    try {
     const entryWork = Object
       .values(worksById)
       .find(work => work._meta_.level === 1 && work._meta_.prevNode === null)
     if (entryWork === undefined) return
     setWorksIds(extractRootWork(entryWork.id))
+    } catch {
+      console.log('missed')
+    }
   }, [worksById, worksQnty])
 
 

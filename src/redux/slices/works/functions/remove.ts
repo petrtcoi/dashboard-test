@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import { current } from "@reduxjs/toolkit"
-import * as api from './../../../../api'
+import * as api from '../../../../api'
 
 import { WorksState } from ".."
 import { WorkId } from "../../../../typescript/work.type"
@@ -13,7 +13,6 @@ export const removeWork = createAsyncThunk(
   }
 
 )
-
 
 export const removeWorkWithChild = (
   state: WorksState,
@@ -39,6 +38,8 @@ export const removeWorkWithChild = (
       parentWork._meta_.childNodes
         .filter(x => x !== work.id)
   }
+
+
 
 }
 

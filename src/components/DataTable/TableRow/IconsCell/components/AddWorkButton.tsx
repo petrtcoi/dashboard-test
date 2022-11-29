@@ -1,7 +1,7 @@
 import { isWorkLevelCorrect, WorkId, WorkMeta, getNextLevel } from '../../../../../typescript/work.type'
 import { useAppDispatch } from '../../../../../redux/hooks'
 import { preCreate } from "../../../../../redux/slices/works"
-import { removeWork } from "../../../../../redux/slices/works/methods/remove"
+import { removeWork } from "../../../../../redux/slices/works/functions/remove"
 
 
 type AddWorkButtonProps = { meta: WorkMeta, nextLevel?: boolean, workId: WorkId, disabled?: boolean }

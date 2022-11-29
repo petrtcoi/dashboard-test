@@ -1,0 +1,1 @@
+export {fetchAllWorks} from './ferchAllWorks'

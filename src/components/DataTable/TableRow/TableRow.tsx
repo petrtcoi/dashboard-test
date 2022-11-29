@@ -14,6 +14,11 @@ const TableRow: React.FC<TableRowProps> = (props) => {
 
   const [editing, setEditing] = React.useState<boolean>(false)
   const work = useAppSelector(state => state.works.byId[props.workId]) || null
+
+  const prevNodeStatus = useAppSelector(state => state.works.byId[work._meta_.prevNode || props.workId]._meta_.status)
+
+
+
   if (work === null) return null
 
   return (
@@ -23,6 +28,7 @@ const TableRow: React.FC<TableRowProps> = (props) => {
       onDoubleClick={ () => setEditing(true) }
     >
       <IconsCell meta={ work._meta_ } workId={ work.id } />
+      { prevNodeStatus }
       { work._meta_.status === WorkStatus.Creating ?
         <EditDataCells work={ work } /> :
         <DisplayDataCells work={ work } />
