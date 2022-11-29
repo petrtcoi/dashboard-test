@@ -1,16 +1,53 @@
-import Ajv, { JSONSchemaType } from 'ajv'
-const ajv = new Ajv({ allErrors: true })
+import Joi from 'joi'
+
+
 
 export type WorkId = number
+export enum VisibilityStatus {
+  Expanded = 'expanded',      // развернуты подзадачи
+  Collapsed = 'collapsed'     // подзадачи свернуты
+}
+export enum ActionStatus {
+  Pending = 'pending',      // ничего не происходит
+  Editing = 'editing',      // задачу редактируют
+  Creating = 'creating'    // задача создается
+}
+export type WorkStatus = {
+  visibility: VisibilityStatus
+  action: ActionStatus
+  drawFoldersTreeLines: { 1: boolean, 2: boolean }
+}
 
-type _Work = {
+
+
+export type Work = {
   id: WorkId,
   rowName: string,
   overheads: number,
   salary: number,
   materials: number,
-  estimatedProfit: number,
+  estimatedProfit: number
+}
 
+export type WorkMeta = {
+  nextNode?: WorkId
+  prevNode?: WorkId
+  parentNode?: WorkId
+  firstChildNode?: WorkId
+
+  nestingLevel: number          // уровень вложенности Work в дереве
+  status: WorkStatus            // собственный статус Work
+  soakingStatus: WorkStatus     // агрегированный статус, "опускающийся" от siblings (prevNode) и parent
+}
+
+
+
+
+/**
+ * Чать Work, которая в рамках данного проекта
+ * никак не используется
+ */
+export type NotUsedInfo = {
   equipmentCosts: number,
   machineOperatorSalary: number,
   mainCosts: number,
@@ -18,79 +55,51 @@ type _Work = {
   supportCosts: number,
   total: number,
 }
-
-export type WorkParentId = WorkId | null
-
-export type WorkLevel = 1 | 2 | 3
-export type SomeWorkLevel = -1 | WorkLevel
-
-export function isWorkLevelCorrect(level: SomeWorkLevel): level is WorkLevel {
-  return (level === 1 || level === 2 || level === 3)
-}
-export function getNextLevel(level: SomeWorkLevel): SomeWorkLevel {
-  return (
-    (level == 1) ? 2 :
-      (level === 2) ? 3 : -1
-  )
+export function genEmptyNotUserInfo(): NotUsedInfo {
+  return {
+    equipmentCosts: 0,
+    machineOperatorSalary: 0,
+    mainCosts: 0,
+    mimExploitation: 0,
+    supportCosts: 0,
+    total: 0,
+  }
 }
 
 
-export enum WorkStatus {
-  Pending = 'pending',
-  Creating = 'creating',
-  Editing = 'editing',
-  Blocked = 'blocked'
-}
-export type WorkMeta = {
-  level: WorkLevel
-  parentNode: WorkParentId
-  prevNode: WorkId | null
-  nextNode: WorkId | null
-  childNodes: WorkId[]
-  status: WorkStatus
-}
+/**
+ * Обмен информацией с сервером
+ */
 
-export type Work = _Work & { _meta_: WorkMeta }
-type WorkChild = { child: WorkGetDto[] }
+export type CreateWorkDto =
+  Omit<Work, 'id'>
+  & NotUsedInfo
+  & { parentId?: WorkId }
 
-
-/** ОБЩЕНИЕ С СЕРВЕРОМ */
-export type WorkCreateDto = _Work & { parentId: WorkParentId }
-
-export type WorkGetDto = _Work & WorkChild
+export type WorkGetDto =
+  Work
+  & NotUsedInfo
+  & { child: Work[] }
 
 export type WorkGetListDto = WorkGetDto[]
 
 
 
-// @ts-ignore
-const workGetSchema: JSONSchemaType<WorkGetDto> = {
-  $id: 'work-get-schema',
-  type: 'object',
-  properties: {
-    id: { type: 'integer' },
-    rowName: { type: 'string' },
-
-    equipmentCosts: { type: 'number' },
-    estimatedProfit: { type: 'number' },
-    machineOperatorSalary: { type: 'number' },
-    mainCosts: { type: 'number' },
-    materials: { type: 'number' },
-    mimExploitation: { type: 'number' },
-    overheads: { type: 'number' },
-    salary: { type: 'number' },
-    supportCosts: { type: 'number' },
-    total: { type: 'number' },
-    child: {
-      type: 'array',
-      minItems: 0,
-      items: { $ref: 'work-get-schema' }
-    }
-  },
-  required: [
-    'id', 'rowName', 'equipmentCosts', 'estimatedProfit',
-    'machineOperatorSalary', 'mainCosts', 'materials', 'mimExploitation',
-    'overheads', 'salary', 'supportCosts', 'total', 'child'
-  ],
-}
-export const validateGetList = ajv.addSchema(workGetSchema).compile(workGetSchema)
+/**
+ * Joi схема для валидации ответа с сервера - getList
+ */
+export const workDtoSchema = Joi.object({
+  id: Joi.number().required(),
+  rowName: Joi.string().required(),
+  equipmentCosts: Joi.number().required(),
+  estimatedProfit: Joi.number().required(),
+  machineOperatorSalary: Joi.number().required(),
+  mainCosts: Joi.number().required(),
+  materials: Joi.number().required(),
+  mimExploitation: Joi.number().required(),
+  overheads: Joi.number().required(),
+  salary: Joi.number().required(),
+  supportCosts: Joi.number().required(),
+  total: Joi.number().required(),
+  child: Joi.array().items(Joi.link('#work_dto'))
+}).id('work_dto')
