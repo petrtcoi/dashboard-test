@@ -1,5 +1,6 @@
 import Joi from 'joi'
-
+import * as R from 'ramda'
+import { removeWork } from '../redux/slices/works/functions/terminate'
 
 
 export type WorkId = number
@@ -8,7 +9,7 @@ export enum VisibilityStatus {
   Collapsed = 'collapsed'     // подзадачи свернуты
 }
 export enum ActionStatus {
-  Pending = 'pending',      // ничего не происходит
+  Idle = 'idle',      // ничего не происходит
   Editing = 'editing',      // задачу редактируют
   Creating = 'creating'    // задача создается
 }
@@ -20,6 +21,7 @@ export type WorkStatus = {
 
 
 
+
 export type Work = {
   id: WorkId,
   rowName: string,
@@ -28,6 +30,9 @@ export type Work = {
   materials: number,
   estimatedProfit: number
 }
+/** Убирает лишние поля из WorkGetDto, чтобы получить Work */
+export const castWorkDto = (obj: WorkGetDto): Work => R.pick(['id', 'rowName', 'overheads', 'salary', 'materials', 'estimatedProfit'], obj)
+
 
 export type WorkMeta = {
   nextNode?: WorkId
@@ -79,7 +84,7 @@ export type CreateWorkDto =
 export type WorkGetDto =
   Work
   & NotUsedInfo
-  & { child: Work[] }
+  & { child: WorkGetDto[] }
 
 export type WorkGetListDto = WorkGetDto[]
 
