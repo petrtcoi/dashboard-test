@@ -45,7 +45,7 @@ $vertical-shift: calc(table.$tr-height / 2 - 2px);
     width: 1px;
     height: 20px;
   }
-  &.between_upper_nodes {
+  &.between_upper_siblings {
     bottom: -50px;
     left: -32px;
     width: 1px;

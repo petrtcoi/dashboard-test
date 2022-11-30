@@ -22,9 +22,8 @@ type IconsCellProps = {
 const IconsCell: React.FC<IconsCellProps> = (props) => {
 
   const meta = useAppSelector(selectMeta(props.workId))
-
-
   const paddingLeft = `${(meta.nestingLevel - 1) * COL_WIDTH}px`
+
 
   return (
     <td className='icons_cell' style={ { paddingLeft } }>
@@ -38,11 +37,11 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
         { meta.firstChildNode &&
           <div className='line down_to_child' />
         }
-        { false &&
+        { meta.nextNode &&
           <div className='line between_siblings' />
         }
-        { false &&
-          <div className='line between_upper_nodes' />
+        { meta.supervisedStatus.drawLineBetweenUpperSiblings === true &&
+          <div className='line between_upper_siblings' />
         }
       </div>
 
