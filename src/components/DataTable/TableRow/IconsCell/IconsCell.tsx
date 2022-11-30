@@ -1,4 +1,7 @@
-// import React from 'react'
+import React from 'react'
+import { useAppSelector } from '../../../../redux/hooks'
+import { selectMeta } from '../../../../redux/slices/works/selectors/selectMeta'
+import { WorkId } from '../../../../typescript/work.type'
 // import { Work, WorkId, WorkMeta, getNextLevel } from '../../../../typescript/work.type'
 
 // import { getNodeType } from './IconsCell.service'
@@ -10,12 +13,21 @@
 // import { useAppSelector } from '../../../../redux/hooks/index'
 
 
-// type IconsCellProps = {
-//   meta: WorkMeta
-//   workId: Work['id']
-// }
+type IconsCellProps = {
+  workId: WorkId
+}
 
-// const IconsCell: React.FC<IconsCellProps> = (props) => {
+const IconsCell: React.FC<IconsCellProps> = (props) => {
+
+  const meta = useAppSelector(selectMeta(props.workId))
+
+  return (
+    <td data-cell='icons'>
+      {meta.nestingLevel}
+    </td>
+  )
+
+}
 
 //   const nodeType = getNodeType(props.meta.nextNode, props.meta.level)
 //   const isParentNotLastChild = props.meta.parentNode === null ? false : isNodeIsLastChild(props.meta.parentNode) && props.meta.level === 3
@@ -40,4 +52,4 @@
 
 // }
 
-// export { IconsCell }
+export { IconsCell }

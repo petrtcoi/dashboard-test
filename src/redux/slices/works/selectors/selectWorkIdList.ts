@@ -3,7 +3,6 @@ import { WorksState } from '..'
 import { WorkId } from '../../../../typescript/work.type'
 import { RootState } from '../../../store'
 
-export const selectWo = (state: RootState) => state.works.metaById
 
 /**
  * Получаем список ID работ, развернутый в порядка: сначала дети (child), потом siblings (nextNode)
@@ -22,14 +21,14 @@ export const selectWorkIdList = (state: RootState) => {
 }
 
 
-function addWork(workId: WorkId, list: WorkId[], metaById: WorksState['metaById']): WorkId[] {
-  const meta = metaById[workId]
-  if (!meta) return list
-
-  const nextNode = meta.firstChildNode || meta.nextNode || undefined
-  const newList = [...list, workId]
-  return !nextNode
-    ? newList
-    : addWork(nextNode, newList, metaById)
+function addWork(workId: WorkId | undefined, list: WorkId[], metaById: WorksState['metaById']): WorkId[] {
+  if (!workId || !metaById[workId]) return list
+  const workMeta = metaById[workId]
+  return [
+    ...list,
+    workId,
+    ...addWork(workMeta.firstChildNode, [], metaById),
+    ...addWork(workMeta.nextNode, [], metaById)
+  ]
 }
 

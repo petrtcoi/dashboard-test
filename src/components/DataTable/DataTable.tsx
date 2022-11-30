@@ -14,12 +14,19 @@ type DataTableProps = {}
 const DataTable: React.FC<DataTableProps> = (_props) => {
 
   const workIdList = useAppSelector(selectWorkIdList)
-  
+
   return (
     <table className='data-table'>
       <TableHeader />
       <tbody>
-        { workIdList.map(workId => <TableRow key={ workId } workId={ workId } />) }
+        { workIdList
+          .map(workId =>
+            <TableRow
+              key={ workId }
+              workId={ workId }
+            />
+          )
+        }
       </tbody>
     </table>
   )

@@ -4,7 +4,7 @@ import * as R from 'ramda'
 import * as api from './../../../../api/'
 
 import { WorksState } from ".."
-import { WorkGetListDto, WorkGetDto, castWorkDto, WorkStatus, VisibilityStatus, ActionStatus } from '../../../../typescript/work.type'
+import { WorkGetListDto, WorkGetDto, castWorkDto, WorkStatus, VisibilityStatus, ActionStatus, WorkMeta, WorkId } from '../../../../typescript/work.type'
 
 
 type ApiData = { dto: WorkGetListDto }
@@ -67,7 +67,7 @@ function getWork(workDto: WorkGetDto, workById: WorksState['workById']): WorksSt
  * Получаем объект metaById для State
  */
 function getMetaById(props: ApiData & Pick<WorksState, 'workById'>): ApiData & Pick<WorksState, 'workById' | 'metaById'> {
-  const metaById = scanWorkForMeta(props.dto[0], Object.create(null))
+  const metaById = scanWorkList({ list: props.dto, nestingLevel: 1, parentWork: undefined })
   return {
     ...props,
     metaById
@@ -75,50 +75,26 @@ function getMetaById(props: ApiData & Pick<WorksState, 'workById'>): ApiData & P
 }
 
 
-function scanWorkForMeta(workDto: WorkGetDto, metaById: WorksState['metaById']): WorksState['metaById'] {
-  const { child, id: workId } = workDto
-  let updatedMeta = { ...metaById }
+type ScanWorkListProps = { list: WorkGetDto[], nestingLevel: WorkMeta['nestingLevel'], parentWork?: WorkId }
 
-  if (!child || child.length === 0) return updatedMeta
+function scanWorkList(props: ScanWorkListProps): WorksState['metaById'] {
+  return props.list.reduce((acc: WorksState['metaById'], work, index, workList) => {
+    return ({
+      ...acc,
+      [work.id]: {
+        nestingLevel: props.nestingLevel,
+        status: defaultWorkStatus,
+        soakingStatus: defaultWorkStatus,
+        parentNode: index === 0 ? props.parentWork : undefined,
+        prevNode: workList[index - 1]?.id || undefined,
+        nextNode: workList[index + 1]?.id || undefined,
+        firstChildNode: work.child[0]?.id || undefined
+      },
+      ...scanWorkList({ list: work.child, nestingLevel: props.nestingLevel + 1, parentWork: work.id })
+    })
 
-  /** Ставим уровни вложенности */
-  const workLevel = metaById[workId]?.nestingLevel || 1
-  const childLevel = workLevel + 1
-
-  /** Устанавливаем связи среди "детей" работы */
-  return child.reduce((meta, childWork, index) => {
-    return scanWorkForMeta(
-      childWork,
-      {
-        ...meta,
-        [childWork.id]: {
-          ...updatedMeta[childWork.id],
-          nestingLevel: childLevel,
-          parentNode: index === 0 ? workId : undefined,
-          prevNode: child[index - 1]?.id || undefined,
-          nextNode: child[index + 1]?.id || undefined
-        }
-      }
-    )
-  }, {
-    ...updatedMeta,
-
-    /** Прописываем связь между родительской и дочерней работой  */
-    [workId]: {
-      ...updatedMeta[workId],
-      firstChildNode: child[0].id,
-      nestingLevel: workLevel,
-      status: defaultWorkStatus,
-      soakingStatus: defaultWorkStatus
-    },
-    [child[0].id]: {
-      ...updatedMeta[child[0].id],
-      parentNode: workId,
-      nestingLevel: childLevel
-    }
-  })
+  }, Object.create(null))
 }
-
 
 const defaultWorkStatus: WorkStatus = {
   visibility: VisibilityStatus.Expanded,

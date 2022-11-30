@@ -1,10 +1,13 @@
 import React from 'react'
+import { shallowEqual } from 'react-redux'
 import { useAppSelector } from '../../../redux/hooks'
 import { WorkId, WorkStatus } from '../../../typescript/work.type'
 import { DisplayDataCells } from './DisplayDataCells'
 import { EditDataCells } from './EditDataCells'
 import { IconsCell } from './IconsCell'
 import './TableRow.styles.scss'
+import { selectIsWorkExist } from '../../../redux/slices/works/selectors/selectIsWorkExist'
+import * as R from 'ramda'
 
 type TableRowProps = {
   workId: WorkId
@@ -12,27 +15,23 @@ type TableRowProps = {
 
 const TableRow: React.FC<TableRowProps> = (props) => {
 
-  const [editing, setEditing] = React.useState<boolean>(false)
-  const work = useAppSelector(state => state.works.byId[props.workId]) || null
+  const isWorkExist = useAppSelector(selectIsWorkExist(props.workId))
 
-  const prevNodeStatus = useAppSelector(state => state.works.byId[work._meta_.prevNode || props.workId]._meta_.status)
-
-
-
-  if (work === null) return null
-
+  if (R.isNil(isWorkExist)) return null
   return (
     <tr
       key={ props.workId }
       className="table-row"
-      onDoubleClick={ () => setEditing(true) }
+    // onDoubleClick={ () => setEditing(true) }
     >
-      <IconsCell meta={ work._meta_ } workId={ work.id } />
+      <IconsCell workId={ props.workId } /> 
+      <DisplayDataCells workId={ props.workId } />
+      {/* <IconsCell meta={ work._meta_ } workId={ work.id } />
       { prevNodeStatus }
       { work._meta_.status === WorkStatus.Creating ?
         <EditDataCells work={ work } /> :
         <DisplayDataCells work={ work } />
-      }
+      } */}
     </tr>
 
   )
