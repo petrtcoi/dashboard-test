@@ -5,7 +5,7 @@
 html,
 body {
   margin: 0;
-  min-width: 1400px;
+  min-width: 1600px;
 
   @include props($font-default);
   background-color: $background-color;

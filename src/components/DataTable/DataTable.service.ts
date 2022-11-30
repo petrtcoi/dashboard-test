@@ -1,16 +1,13 @@
-import React from "react"
-import { useAppDispatch } from "../../redux/hooks"
-import { preCreate } from "../../redux/slices/works"
+// import React from "react"
+// import { useAppSelector } from "../../redux/hooks"
+// import { selectMeta } from "../../redux/slices/works/selectors"
 
-export const useCreateFirstWork = (worksQnty: number, fetched: boolean) => {
 
-  const dispatch = useAppDispatch()
+// const useWorkIdList = () => {
 
-  React.useEffect(() => {
-    if (fetched === false || worksQnty > 0) return
-    dispatch(preCreate({
-      initWorkId: null,
-      createType: 'child'
-    }))
-  }, [fetched, worksQnty])
-}
+//   const meta = useAppSelector(selectMeta)
+  
+//   const
+
+// }
+// function getWorkId

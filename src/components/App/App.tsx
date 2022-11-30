@@ -13,12 +13,11 @@ export const App = () => {
 
   return (
     <div className='layout'>
-      loading...
-      {/* <Header />
-    //   <main className="main-block">
-    //     <Sidebar projects={ projects } />
-    //     <DataTable />
-    //   </main> */}
+      <Header />
+      <main className="main-block">
+        <Sidebar projects={ projects } />
+        <DataTable />
+      </main>
     </div>
   )
 }
