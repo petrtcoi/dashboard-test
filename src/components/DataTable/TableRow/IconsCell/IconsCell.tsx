@@ -22,15 +22,38 @@ type IconsCellProps = {
 const IconsCell: React.FC<IconsCellProps> = (props) => {
 
   const meta = useAppSelector(selectMeta(props.workId))
-  const marginLeft = `${(meta.nestingLevel - 1) * COL_WIDTH}px`
+
+
+  const paddingLeft = `${(meta.nestingLevel - 1) * COL_WIDTH}px`
 
   return (
-    <td className="icons_cell">
-      <div
-        style={{marginLeft}}
-        className={ `folder icon-level-${meta.nestingLevel}` }
-        data-nested={meta.nestingLevel > 1 ? 'true' : ''}
-      />
+    <td className='icons_cell' style={ { paddingLeft } }>
+      <div className={ `folder icon-level-${meta.nestingLevel}` }>
+        { meta.nestingLevel > 1 &&
+          <div className='line horizontal' />
+        }
+        { meta.nestingLevel > 1 &&
+          <div className='line up_to_parent' />
+        }
+        { meta.firstChildNode &&
+          <div className='line down_to_child' />
+        }
+        { false &&
+          <div className='line between_siblings' />
+        }
+        { false &&
+          <div className='line between_upper_nodes' />
+        }
+      </div>
+
+      {/* {
+          meta.nextNode  && 
+          <div  className='line down' />
+        }  */}
+
+
+
+
     </td>
   )
 

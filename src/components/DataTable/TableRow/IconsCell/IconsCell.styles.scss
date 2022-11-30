@@ -8,151 +8,157 @@ $vertical-shift: calc(table.$tr-height / 2 - 2px);
 
 .icons_cell {
   position: relative;
+  vertical-align: middle;
 }
 
 .folder {
-  // display: inline-block;
-  position: relative;
-}
-
-.folder[data-nested="true"]:after {
-  content: "";
-  display: block;
   position: absolute;
-  left: -0px;
-  top: -2px;
-  width: 20px;
-  height: 1px;
-  background-color: color.$primary-light;
-  
-}
-
-
-
-
-//  /??
-.icon {
-  padding: 0;
-  border: 0;
-  background-color: transparent;
   z-index: 100;
-  font-size: $icon-font-size;
-  &:disabled {
-    filter: saturate(10%) brightness(50%);
-  }
-  &:hover:not(:disabled) {
-    cursor: pointer;
-  }
 }
 
-//  ИКОНКИ ПАПОК со смещением вправо по уровням вложенности
-@mixin cell-level {
-  display: flex;
-  position: relative;
-  height: table.$tr-height;
-}
-.level-1 {
-  @include cell-level;
-}
-.level-2 {
-  @include cell-level;
-  padding-left: $shift;
-}
-.level-3 {
-  @include cell-level;
-  padding-left: $shift * 2;
-}
-
-// РАСШИРЕННЫЕ ИКОНКИ
-.icons-extended {
-  & .icon {
-    margin-left: 7px;
-  }
-}
-
-.icons-area {
-  display: flex;
-  align-self: center;
-  position: inherit;
-  padding: 6px;
-  margin-left: -6px;
-  border-radius: 6px;
-
-  & .icons-extended {
-    visibility: hidden;
-    opacity: 0;
-    transition-delay: opacity 0.5s;
-    transition: visibility 0s, opacity 0.5s ease-out;
-    
-  }
-
-  &:hover {
-    background-color: color.$grey;
-    transition: background-color 0.2s;
-    .icons-extended {
-      display: inherit;
-      visibility: visible;
-      opacity: 1;
-      transition: visibility 0s, opacity 0.5s ease-out;
-    }
-  }
-}
-
-// БОКОВЫЕ ВЕРТИКАЛЬНЫЕ ЛИНИИ ПАПОК 2-го и 3-го уровней
-
-@mixin vertical-line {
+.line {
   position: absolute;
-  top: -$vertical-shift;
-  left: $half-icon;
-  z-index: 0;
-  width: 1px;
-  height: table.$tr-height * 1.5;
+  z-index: 1;
   background-color: color.$primary-light;
+
+  &.horizontal {
+    bottom: 7px;
+    left: -12px;
+    width: 12px;
+    height: 1px;
+  }
+  &.up_to_parent {
+    bottom: 8px;
+    left: -12px;
+    width: 1px;
+    height: 40px;
+  }
+  &.between_siblings {
+    bottom: -20px;
+    left: -12px;
+    width: 1px;
+    height: 30px;
+  }
+  &.down_to_child {
+    bottom: -20px;
+    left: 8px;
+    width: 1px;
+    height: 20px;
+  }
+  &.between_upper_nodes {
+    bottom: -50px;
+    left: -32px;
+    width: 1px;
+    height: 120px;
+  }
 }
 
-.line-last-child {
-  @include vertical-line;
-  height: table.$tr-height;
-  .level-3 & {
-    left: $half-icon + $shift;
-  }
-}
-.line-child {
-  @include vertical-line;
-  .level-3 & {
-    left: $half-icon + $shift;
-  }
-}
-.line-2nd {
-  @include vertical-line;
-}
+// //  /??
+// .icon {
+//   padding: 0;
+//   border: 0;
+//   background-color: transparent;
+//   z-index: 100;
+//   font-size: $icon-font-size;
+//   &:disabled {
+//     filter: saturate(10%) brightness(50%);
+//   }
+//   &:hover:not(:disabled) {
+//     cursor: pointer;
+//   }
+// }
 
-.folder-vertical-lines {
-  @include vertical-line;
+// //  ИКОНКИ ПАПОК со смещением вправо по уровням вложенности
 
-  [data-folder='child-last'] & {
-    height: table.$tr-height;
-  }
-  .level-1 & {
-    display: none;
-  }
-  .level-3 & {
-    left: $half-icon + $shift;
-  }
-}
+// // РАСШИРЕННЫЕ ИКОНКИ
+// .icons-extended {
+//   & .icon {
+//     margin-left: 7px;
+//   }
+// }
 
-.horizontal-line {
-  position: absolute;
-  bottom: calc(table.$tr-height / 2 - 2px);
-  left: $half-icon;
-  z-index: 0;
-  width: 20px;
-  height: 1px;
-  background-color: color.$primary-light;
-  .level-1 & {
-    display: none;
-  }
-  .level-3 & {
-    left: $half-icon + $shift;
-  }
-}
+// .icons-area {
+//   display: flex;
+//   align-self: center;
+//   position: inherit;
+//   padding: 6px;
+//   margin-left: -6px;
+//   border-radius: 6px;
+
+//   & .icons-extended {
+//     visibility: hidden;
+//     opacity: 0;
+//     transition-delay: opacity 0.5s;
+//     transition: visibility 0s, opacity 0.5s ease-out;
+//   }
+
+//   &:hover {
+//     background-color: color.$grey;
+//     transition: background-color 0.2s;
+//     .icons-extended {
+//       display: inherit;
+//       visibility: visible;
+//       opacity: 1;
+//       transition: visibility 0s, opacity 0.5s ease-out;
+//     }
+//   }
+// }
+
+// // БОКОВЫЕ ВЕРТИКАЛЬНЫЕ ЛИНИИ ПАПОК 2-го и 3-го уровней
+
+// @mixin vertical-line {
+//   position: absolute;
+//   top: -$vertical-shift;
+//   left: $half-icon;
+//   z-index: 0;
+//   width: 1px;
+//   height: table.$tr-height * 1.5;
+//   background-color: color.$primary-light;
+// }
+
+// .line-last-child {
+//   @include vertical-line;
+//   height: table.$tr-height;
+//   .level-3 & {
+//     left: $half-icon + $shift;
+//   }
+// }
+// .line-child {
+//   @include vertical-line;
+//   .level-3 & {
+//     left: $half-icon + $shift;
+//   }
+// }
+// .line-2nd {
+//   @include vertical-line;
+// }
+
+// .folder-vertical-lines {
+//   @include vertical-line;
+
+//   [data-folder='child-last'] & {
+//     height: table.$tr-height;
+//   }
+//   .level-1 & {
+//     display: none;
+//   }
+//   .level-3 & {
+//     left: $half-icon + $shift;
+//   }
+// }
+
+// .horizontal-line {
+//   position: absolute;
+//   bottom: calc(table.$tr-height / 2 - 2px);
+//   left: $half-icon;
+//   z-index: 0;
+//   width: 20px;
+//   height: 1px;
+//   background-color: color.$primary-light;
+//   .level-1 & {
+//     display: none;
+//   }
+//   .level-3 & {
+//     left: $half-icon + $shift;
+//   }
+// }
