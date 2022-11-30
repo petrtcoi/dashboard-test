@@ -3,7 +3,6 @@
 $tr-height: 60px;
 $td-padding-left: 12px;
 
-
 tr {
   height: $tr-height;
   max-height: $tr-height;
@@ -14,4 +13,9 @@ td {
   padding-left: $td-padding-left;
   max-height: $tr-height;
   height: $tr-height;
+
+  &.row_name:hover {
+    cursor: pointer;
+    filter: brightness(70%);
+  }
 }

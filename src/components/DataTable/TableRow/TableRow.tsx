@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
-import { WorkId } from '../../../typescript/work.type'
+import { ActionStatus, WorkId } from '../../../typescript/work.type'
 import { DisplayDataCells } from './DisplayDataCells'
 import { IconsCell } from './IconsCell'
 import './TableRow.styles.scss'
@@ -8,8 +8,8 @@ import { selectIsWorkExist } from '../../../redux/slices/works/selectors/selectI
 import * as R from 'ramda'
 import { watchSuperStatus } from './TableRow.service'
 import { selectMeta } from '../../../redux/slices/works/selectors/selectMeta'
-import { selectSuperStatus } from '../../../redux/slices/works/selectors/selectSuperStatus'
 import { setSuperStatus } from '../../../redux/slices/works'
+import { EditDataCells } from './EditDataCells'
 
 type TableRowProps = {
   workId: WorkId
@@ -28,24 +28,22 @@ const TableRow: React.FC<TableRowProps> = (props) => {
   }, [])
 
 
-  
   if (R.isNil(isWorkExist)) return null
   return (
     <tr
       key={ props.workId }
       className="table-row"
-      // onDoubleClick={ () => dispatch(setSuperStatus({ workId: props.workId, status: { ...meta.status, initChange: true } })) }
     >
       <IconsCell workId={ props.workId } />
-      <DisplayDataCells workId={ props.workId } />
-      {/* <IconsCell meta={ work._meta_ } workId={ work.id } />
-      { prevNodeStatus }
-      { work._meta_.status === WorkStatus.Creating ?
-        <EditDataCells work={ work } /> :
-        <DisplayDataCells work={ work } />
-      } */}
-    </tr>
+      {
+        R.cond([
+          [R.equals(ActionStatus.Editing), R.always(<EditDataCells workId={ props.workId } />)],
+          [R.equals(ActionStatus.Creating), R.always(<EditDataCells workId={ props.workId } />)],
+          [R.T, R.always(<DisplayDataCells workId={ props.workId } />)]
+        ])(meta.status.action)
+      }
 
+    </tr>
   )
 
 }

@@ -15,10 +15,10 @@
 
   z-index: 100;
   background-color: transparent;
-  &.disabled {
-    filter: saturate(20%) brightness(100%);
+  &:disabled {
+    filter: saturate(30%);
   }
-  &:hover:not(.disabled) {
+  &:hover:not(:disabled) {
     cursor: pointer;
     filter: saturate(150%);
   }

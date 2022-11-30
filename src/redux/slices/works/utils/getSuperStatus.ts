@@ -1,5 +1,8 @@
+import * as R from 'ramda'
 import { WorksState } from ".."
-import { WorkId, WorkMeta } from "../../../../typescript/work.type"
+import { ActionStatus, WorkId } from "../../../../typescript/work.type"
+
+const isNotNil = R.complement(R.isNil)
 
 
 export function getSuperStatus(workId: WorkId, metaById: WorksState["metaById"]) {
@@ -16,6 +19,21 @@ export function getSuperStatus(workId: WorkId, metaById: WorksState["metaById"])
   const parentMeta = metaById[parentNode]
   return {
     ...parentMeta.superStatus,
-    drawBetweenUpperSiblings: (!!parentMeta.nextNode || parentMeta.superStatus.drawBetweenUpperSiblings === true) ? true : false
+    action:
+      R.cond([
+        [R.always(parentMeta.status.action !== ActionStatus.Idle), R.always(parentMeta.status.action)],
+        [R.always(parentMeta.superStatus.action !== ActionStatus.Idle), R.always(parentMeta.superStatus.action)],
+        [R.T, R.always(ActionStatus.Idle)]
+      ])()
+    ,
+    drawBetweenUpperSiblings:
+      R.ifElse(
+        R.anyPass([
+          R.always(isNotNil(parentMeta.nextNode)),
+          R.always(parentMeta.superStatus.drawBetweenUpperSiblings === true)
+        ]),
+        R.always(true),
+        R.always(false)
+      )()
   }
 }

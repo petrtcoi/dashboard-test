@@ -4,7 +4,7 @@ import * as R from 'ramda'
 import { fetchAllWorks } from "./asyncThunks/ferchAllWorks"
 import { addFetchAllWorks, clearFetchAllWorks } from "./utils/onWork"
 
-import { Work, WorkId, WorkMeta, WorkStatus } from "../../../typescript/work.type"
+import { ActionStatus, Work, WorkId, WorkMeta, WorkStatus } from "../../../typescript/work.type"
 import { ErrorLog, logError } from "../../../typescript/errorLog.type"
 import { selectSuperStatus } from './selectors/selectSuperStatus'
 
@@ -39,6 +39,10 @@ export const worksSlice = createSlice({
     setSuperStatus: (state, action: PayloadAction<{ workId: WorkId, status: WorkStatus }>) => {
       const { workId, status } = action.payload
       state.metaById[workId].superStatus = status
+    },
+    setActionStatus: (state, action: PayloadAction<{ workId: WorkId, status: ActionStatus }>)  => {
+      const { workId, status } = action.payload
+      state.metaById[workId].status.action = status
     }
 
   },
@@ -62,5 +66,5 @@ export const worksSlice = createSlice({
 
 })
 
-export const { setSuperStatus } = worksSlice.actions
+export const { setSuperStatus, setActionStatus } = worksSlice.actions
 export default worksSlice.reducer

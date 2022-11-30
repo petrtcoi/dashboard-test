@@ -14,6 +14,7 @@ import './IconsCell.styles.scss'
 // import { RemoveWorkButton } from './components/RemoveWorkButton'
 // import { useAppSelector } from '../../../../redux/hooks/index'
 import { isNestedLevelCorrect } from '../../../../redux/slices/works/utils/isNestedLevelCorrect'
+import { isDisabled } from './IconCell.service'
 
 const COL_WIDTH = 20
 
@@ -28,10 +29,12 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
   const paddingLeft = `${(meta.nestingLevel - 1) * COL_WIDTH}px`
 
 
+
   return (
     <td className='icons_cell' style={ { paddingLeft } }>
       <div className='icons-area'>
-        <div
+        <button
+          disabled={ isDisabled(meta) }
           role='button'
           className={ `icon-button icon-level-${meta.nestingLevel}` }
         >
@@ -52,16 +55,18 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
             meta.nestingLevel === 3 &&
             <div className='line between_upper_siblings' />
           }
-        </div>
+        </button>
         { isNestedLevelCorrect(meta.nestingLevel + 1) &&
-          <div
+          <button
+            disabled={ isDisabled(meta) }
             role='button'
             className={ `icon-button icon-level-${meta.nestingLevel + 1} icon-extended` }
           />
         }
-        <div
+        <button
+          disabled={ isDisabled(meta) }
           role='button'
-          className={ `icon-button icon-remove icon-extended disabled` }
+          className={ `icon-button icon-remove icon-extended` }
         />
       </div>
 
