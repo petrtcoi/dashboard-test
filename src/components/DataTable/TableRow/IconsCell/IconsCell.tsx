@@ -38,9 +38,11 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
           <div className='line down_to_child' />
         }
         { meta.nextNode &&
+          meta.nestingLevel > 1 &&
           <div className='line between_siblings' />
         }
-        { meta.supervisedStatus.drawLineBetweenUpperSiblings === true &&
+        { meta.superStatus.drawBetweenUpperSiblings === true &&
+          meta.nestingLevel === 3 &&
           <div className='line between_upper_siblings' />
         }
       </div>

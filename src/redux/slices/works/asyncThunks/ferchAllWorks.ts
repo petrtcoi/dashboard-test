@@ -5,24 +5,30 @@ import * as api from './../../../../api/'
 
 import { WorksState } from ".."
 import { WorkGetListDto, WorkGetDto, castWorkDto, WorkStatus, VisibilityStatus, ActionStatus, WorkMeta, WorkId } from '../../../../typescript/work.type'
+import { getSuperStatus } from "../utils/getSuperStatus"
+import { logError } from '../../../../typescript/errorLog.type'
 
 
 type ApiData = { dto: WorkGetListDto }
 
-export type FetchAllWorksResult = Required<Pick<WorksState, 'workById' | 'metaById' | 'rootWorkId'>>
+export type FetchAllWorksResult = Required<Pick<WorksState, 'workById' | 'metaById' | 'rootWorkId' | 'errorLogs'>>
+
 
 export const fetchAllWorks = createAsyncThunk<Promise<FetchAllWorksResult>>(
   'works/fetchAll',
   async () => {
     const apiData = await api.works.getList()
-    return R.pipe(
-      getApiData,
-      getWorksById,
-      getMetaById,
-      getRootWorkId,
-      removeDto
-    )(apiData)
-
+    try {
+      return R.pipe(
+        getApiData,
+        getWorksById,
+        getMetaById,
+        getRootWorkId,
+        removeDto
+      )(apiData)
+    } catch (err) {
+      throw err
+    }
   }
 )
 
@@ -79,16 +85,20 @@ type ScanWorkListProps = { list: WorkGetDto[], nestingLevel: WorkMeta['nestingLe
 
 function scanWorkList(props: ScanWorkListProps): WorksState['metaById'] {
   return props.list.reduce((acc: WorksState['metaById'], work, index, workList) => {
+
     return ({
       ...acc,
       [work.id]: {
         nestingLevel: props.nestingLevel,
         status: defaultWorkStatus,
-        soakingStatus: defaultWorkStatus,
         parentNode: index === 0 ? props.parentWork : undefined,
         prevNode: workList[index - 1]?.id || undefined,
         nextNode: workList[index + 1]?.id || undefined,
-        firstChildNode: work.child[0]?.id || undefined
+        firstChildNode: work.child[0]?.id || undefined,
+        superStatus: {
+          ...defaultWorkStatus,
+          drawBetweenUpperSiblings: acc[work.id]?.nextNode ? true : false
+        }
       },
       ...scanWorkList({ list: work.child, nestingLevel: props.nestingLevel + 1, parentWork: work.id })
     })
@@ -99,8 +109,11 @@ function scanWorkList(props: ScanWorkListProps): WorksState['metaById'] {
 const defaultWorkStatus: WorkStatus = {
   visibility: VisibilityStatus.Expanded,
   action: ActionStatus.Idle,
-  drawFoldersTreeLines: { 1: false, 2: false }
+  drawBetweenUpperSiblings: false,
+  initChange: false,
 }
+
+
 
 
 /** Получаем ID корневой работы - это самая первая из массива */
@@ -111,9 +124,13 @@ function getRootWorkId(props: ApiData & Pick<WorksState, 'workById' | 'metaById'
   if (meta.prevNode) throw Error('Ошибка в обработке ответа с сервера: не верно определена rootWork')
   return {
     ...props,
-    rootWorkId: rootWork.id
+    rootWorkId: rootWork.id,
+    errorLogs: []
   }
 }
 
 /** Удалем лишнее */
 const removeDto = R.omit(['dto'])
+
+
+

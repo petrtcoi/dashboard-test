@@ -1,15 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import * as R from 'ramda'
-import { ErrorLog, logError } from "../../../typescript/errorLog.type"
 
-import { Work, WorkId, WorkMeta } from "../../../typescript/work.type"
 import { fetchAllWorks } from "./asyncThunks/ferchAllWorks"
 import { addFetchAllWorks, clearFetchAllWorks } from "./utils/onWork"
 
+import { Work, WorkId, WorkMeta, WorkStatus } from "../../../typescript/work.type"
+import { ErrorLog, logError } from "../../../typescript/errorLog.type"
+import { selectSuperStatus } from './selectors/selectSuperStatus'
+
+
+
 export * from './asyncThunks/'
 
-
-const defError = R.defaultTo('Произошла ошибка')
 
 
 export type WorksState = {
@@ -33,7 +35,13 @@ export const worksSlice = createSlice({
   name: 'works',
   initialState,
 
-  reducers: {},
+  reducers: {
+    setSuperStatus: (state, action: PayloadAction<{ workId: WorkId, status: WorkStatus }>) => {
+      const { workId, status } = action.payload
+      state.metaById[workId].superStatus = status
+    }
+
+  },
 
   extraReducers: (builder) => {
 
@@ -54,4 +62,5 @@ export const worksSlice = createSlice({
 
 })
 
+export const { setSuperStatus } = worksSlice.actions
 export default worksSlice.reducer
