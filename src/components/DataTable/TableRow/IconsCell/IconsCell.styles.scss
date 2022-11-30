@@ -1,19 +1,27 @@
 @use '../../../../styles/shared/colors' as color;
-@use '../TableRow.styles.scss' as table;
 
-$icon-font-size: 16px;
-$half-icon: calc($icon-font-size / 2);
-$shift: calc($icon-font-size + 4px);
-$vertical-shift: calc(table.$tr-height / 2 - 2px);
 
 .icons_cell {
   position: relative;
   vertical-align: middle;
 }
 
-.folder {
-  position: absolute;
+.icon-button {
+  position: relative;
+  display: inline-block;
+  margin-inline: 3px;
+  padding: 0;
+  border: 0;
+
   z-index: 100;
+  background-color: transparent;
+  &.disabled {
+    filter: saturate(20%) brightness(100%);
+  }
+  &:hover:not(.disabled) {
+    cursor: pointer;
+    filter: saturate(150%);
+  }
 }
 
 .line {
@@ -53,112 +61,38 @@ $vertical-shift: calc(table.$tr-height / 2 - 2px);
   }
 }
 
-// //  /??
-// .icon {
-//   padding: 0;
-//   border: 0;
-//   background-color: transparent;
-//   z-index: 100;
-//   font-size: $icon-font-size;
-//   &:disabled {
-//     filter: saturate(10%) brightness(50%);
-//   }
-//   &:hover:not(:disabled) {
-//     cursor: pointer;
-//   }
-// }
 
-// //  ИКОНКИ ПАПОК со смещением вправо по уровням вложенности
+// РАСШИРЕННЫЕ ИКОНКИ
+.icon-extended {
+  & .icon {
+    margin-left: 7px;
+  }
+}
 
-// // РАСШИРЕННЫЕ ИКОНКИ
-// .icons-extended {
-//   & .icon {
-//     margin-left: 7px;
-//   }
-// }
+.icons-area {
+  display: inline-block;
+  align-self: center;
+  position: inherit;
+  padding: 6px;
+  padding-right: -1px;
+  margin-left: -6px;
+  border-radius: 6px;
 
-// .icons-area {
-//   display: flex;
-//   align-self: center;
-//   position: inherit;
-//   padding: 6px;
-//   margin-left: -6px;
-//   border-radius: 6px;
+  & .icon-extended {
+    visibility: hidden;
+    opacity: 0;
+    transition-delay: opacity 0.5s;
+    transition: visibility 0s, opacity 0.5s ease-out;
+  }
 
-//   & .icons-extended {
-//     visibility: hidden;
-//     opacity: 0;
-//     transition-delay: opacity 0.5s;
-//     transition: visibility 0s, opacity 0.5s ease-out;
-//   }
-
-//   &:hover {
-//     background-color: color.$grey;
-//     transition: background-color 0.2s;
-//     .icons-extended {
-//       display: inherit;
-//       visibility: visible;
-//       opacity: 1;
-//       transition: visibility 0s, opacity 0.5s ease-out;
-//     }
-//   }
-// }
-
-// // БОКОВЫЕ ВЕРТИКАЛЬНЫЕ ЛИНИИ ПАПОК 2-го и 3-го уровней
-
-// @mixin vertical-line {
-//   position: absolute;
-//   top: -$vertical-shift;
-//   left: $half-icon;
-//   z-index: 0;
-//   width: 1px;
-//   height: table.$tr-height * 1.5;
-//   background-color: color.$primary-light;
-// }
-
-// .line-last-child {
-//   @include vertical-line;
-//   height: table.$tr-height;
-//   .level-3 & {
-//     left: $half-icon + $shift;
-//   }
-// }
-// .line-child {
-//   @include vertical-line;
-//   .level-3 & {
-//     left: $half-icon + $shift;
-//   }
-// }
-// .line-2nd {
-//   @include vertical-line;
-// }
-
-// .folder-vertical-lines {
-//   @include vertical-line;
-
-//   [data-folder='child-last'] & {
-//     height: table.$tr-height;
-//   }
-//   .level-1 & {
-//     display: none;
-//   }
-//   .level-3 & {
-//     left: $half-icon + $shift;
-//   }
-// }
-
-// .horizontal-line {
-//   position: absolute;
-//   bottom: calc(table.$tr-height / 2 - 2px);
-//   left: $half-icon;
-//   z-index: 0;
-//   width: 20px;
-//   height: 1px;
-//   background-color: color.$primary-light;
-//   .level-1 & {
-//     display: none;
-//   }
-//   .level-3 & {
-//     left: $half-icon + $shift;
-//   }
-// }
+  &:hover {
+    background-color: color.$grey;
+    transition: background-color 0.2s;
+    .icon-extended {
+      display: inherit;
+      visibility: visible;
+      opacity: 1;
+      transition: visibility 0s, opacity 0.5s ease-out;
+    }
+  }
+}

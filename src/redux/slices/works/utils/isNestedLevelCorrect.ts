@@ -1,0 +1,1 @@
+export const isNestedLevelCorrect = (level: number) => level <= 3

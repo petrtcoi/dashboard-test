@@ -3,7 +3,7 @@ import { Work } from '../../../../typescript/work.type'
 import { connectUseForm } from './EditDataCells.service'
 import './EditDataCells.styles.scss'
 import { useAppDispatch } from '../../../../redux/hooks/index'
-import { createWork } from '../../../../redux/slices/works/index'
+// import { createWork } from '../../../../redux/slices/works/index'
 
 type EditDataCellsProps = { work: Work }
 
@@ -17,7 +17,7 @@ const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
     const keyDownHandler = (event: { key: string; preventDefault: () => void }) => {
       if (event.key !== 'Enter') return
       event.preventDefault()
-      dispatch(createWork(({ ...props.work, ...getValues(), parentId: props.work._meta_.parentNode })))
+      // dispatch(createWork(({ ...props.work, ...getValues(), parentId: props.work._meta_.parentNode })))
     }
     document.addEventListener('keydown', keyDownHandler)
     return () => {
