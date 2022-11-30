@@ -6,6 +6,31 @@ $half-icon: calc($icon-font-size / 2);
 $shift: calc($icon-font-size + 4px);
 $vertical-shift: calc(table.$tr-height / 2 - 2px);
 
+.icons_cell {
+  position: relative;
+}
+
+.folder {
+  // display: inline-block;
+  position: relative;
+}
+
+.folder[data-nested="true"]:after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: -0px;
+  top: -2px;
+  width: 20px;
+  height: 1px;
+  background-color: color.$primary-light;
+  
+}
+
+
+
+
+//  /??
 .icon {
   padding: 0;
   border: 0;

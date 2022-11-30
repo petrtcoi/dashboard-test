@@ -7,10 +7,12 @@ import { WorkId } from '../../../../typescript/work.type'
 // import { getNodeType } from './IconsCell.service'
 // import { FolderLines } from './components/folderLines'
 
-// import './IconsCell.styles.scss'
+import './IconsCell.styles.scss'
 // import { AddWorkButton } from './components/AddWorkButton'
 // import { RemoveWorkButton } from './components/RemoveWorkButton'
 // import { useAppSelector } from '../../../../redux/hooks/index'
+
+const COL_WIDTH = 20
 
 
 type IconsCellProps = {
@@ -20,10 +22,15 @@ type IconsCellProps = {
 const IconsCell: React.FC<IconsCellProps> = (props) => {
 
   const meta = useAppSelector(selectMeta(props.workId))
+  const marginLeft = `${(meta.nestingLevel - 1) * COL_WIDTH}px`
 
   return (
-    <td data-cell='icons'>
-      {meta.nestingLevel}
+    <td className="icons_cell">
+      <div
+        style={{marginLeft}}
+        className={ `folder icon-level-${meta.nestingLevel}` }
+        data-nested={meta.nestingLevel > 1 ? 'true' : ''}
+      />
     </td>
   )
 
