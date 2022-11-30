@@ -16,7 +16,8 @@ export enum ActionStatus {
 export type WorkStatus = {
   visibility: VisibilityStatus
   action: ActionStatus
-  drawFoldersTreeLines: { 1: boolean, 2: boolean }
+  drawBetweenUpperSiblings: boolean
+  initChange: boolean
 }
 
 
@@ -42,7 +43,7 @@ export type WorkMeta = {
 
   nestingLevel: number          // уровень вложенности Work в дереве
   status: WorkStatus            // собственный статус Work
-  soakingStatus: WorkStatus     // агрегированный статус, "опускающийся" от siblings (prevNode) и parent
+  superStatus: WorkStatus      // управляющий статус,спускающийся от PrevNode и ParentNode
 }
 
 
