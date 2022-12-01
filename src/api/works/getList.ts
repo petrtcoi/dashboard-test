@@ -22,18 +22,3 @@ export const getList = async (): Promise<WorkGetListDto> => {
 }
 
 
-
-
-
-// export const remove = async (workId: WorkId) => {
-//   const result = await httpClient.delete(`/${workId}/delete`)
-//   if (result.status !== 200) throw new Error('Пользователь не удален')
-//   return
-// }
-
-
-// export const create = async (work: WorkCreateDto) => {
-//   const result = await httpClient.post('/create', work)
-//   if (result.status !== 200) throw new Error('Пользователь не создан')
-//   return result.data.current
-// }
