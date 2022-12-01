@@ -1,21 +1,18 @@
 import React from 'react'
-import { useAppDispatch, useAppSelector } from '../../../../redux/hooks'
-import { selectMeta } from '../../../../redux/slices/works/selectors/selectMeta'
-import { WorkId } from '../../../../typescript/work.type'
-import { AddWorkButton } from './components/AddWorkButton'
-import { RemoveWorkButton } from './components/RemoveWorkButton'
-// import { Work, WorkId, WorkMeta, getNextLevel } from '../../../../typescript/work.type'
+import { isDisabled } from './IconCell.service'
 
-// import { getNodeType } from './IconsCell.service'
-// import { FolderLines } from './components/folderLines'
+import { useAppDispatch, useAppSelector } from '../../../../redux/hooks'
+import { deleteWork, preCreateWork } from '../../../../redux/slices/works/'
+import { selectMeta } from '../../../../redux/slices/works/selectors/selectMeta'
+import { ActionStatus, WorkId } from '../../../../typescript/work.type'
+
+
+import { isNestedLevelCorrect } from '../../../../redux/slices/works/utils/isNestedLevelCorrect'
+
 
 import './IconsCell.styles.scss'
-// import { AddWorkButton } from './components/AddWorkButton'
-// import { RemoveWorkButton } from './components/RemoveWorkButton'
-// import { useAppSelector } from '../../../../redux/hooks/index'
-import { isNestedLevelCorrect } from '../../../../redux/slices/works/utils/isNestedLevelCorrect'
-import { isDisabled } from './IconCell.service'
-import { deleteWork } from '../../../../redux/slices/works/'
+
+
 
 const COL_WIDTH = 20
 
@@ -31,6 +28,8 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
   const paddingLeft = `${(meta.nestingLevel - 1) * COL_WIDTH}px`
 
   const handleDelete = () => dispatch(deleteWork({ workId: props.workId }))
+  const handlePreCreateChild = () => dispatch(preCreateWork({ parentNode: props.workId }))
+  const handlePreCreateSibling = () => dispatch(preCreateWork({ prevNode: props.workId }))
 
 
   return (
@@ -40,6 +39,7 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
           disabled={ isDisabled(meta) }
           role='button'
           className={ `icon-button icon-level-${meta.nestingLevel}` }
+          onClick={ handlePreCreateSibling }
         >
           { meta.nestingLevel > 1 &&
             <div className='line horizontal' />
@@ -64,10 +64,11 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
             disabled={ isDisabled(meta) }
             role='button'
             className={ `icon-button icon-level-${meta.nestingLevel + 1} icon-extended` }
+            onClick={ handlePreCreateChild }
           />
         }
         <button
-          disabled={ isDisabled(meta) }
+          disabled={ isDisabled(meta) && meta.status.action !== ActionStatus.Creating }
           role='button'
           className={ `icon-button icon-remove icon-extended` }
           onClick={ handleDelete }

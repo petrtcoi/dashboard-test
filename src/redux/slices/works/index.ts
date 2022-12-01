@@ -3,10 +3,12 @@ import * as R from 'ramda'
 
 import { fetchAllWorks, updateWork, deleteWork } from "./asyncThunks/"
 import { addFetchAllWorks, clearFetchAllWorks, clearUpdateWork, addDeleteWork, clearDeleteWork, addUpdateWork } from './utils/onWork'
-import { updateInState, deleteFromState} from "./functions/"
+import { updateInState, deleteFromState } from "./functions/"
 
-import { ActionStatus, Work, WorkId, WorkMeta, WorkStatus } from "../../../typescript/work.type"
+import { ActionStatus, Work, WorkId, WorkMeta, WorkStatus } from '../../../typescript/work.type'
 import { ErrorLog, logError } from "../../../typescript/errorLog.type"
+import { insertToState } from './functions/insertToState'
+import { WritableDraft } from "immer/dist/internal"
 
 
 
@@ -37,6 +39,10 @@ export const worksSlice = createSlice({
   initialState,
 
   reducers: {
+    setStatus: (state, action: PayloadAction<{ workId: WorkId, status: WorkStatus }>) => {
+      const { workId, status } = action.payload
+      state.metaById[workId].status = status
+    },
     setSuperStatus: (state, action: PayloadAction<{ workId: WorkId, status: WorkStatus }>) => {
       const { workId, status } = action.payload
       state.metaById[workId].superStatus = status
@@ -49,6 +55,9 @@ export const worksSlice = createSlice({
         })
       }
       state.metaById[workId].status.action = status
+    },
+    preCreateWork: (state, action: PayloadAction<{ prevNode?: WorkId, parentNode?: WorkId }>) => {
+      return insertToState({ state, ...action.payload })
     }
 
   },
@@ -57,30 +66,50 @@ export const worksSlice = createSlice({
 
     /** FETCH ALL USERS */
     builder.addCase(fetchAllWorks.pending, (state, action) => {
-      state = { ...state, onWork: addFetchAllWorks(state.onWork) }
+      return {
+        ...state,
+        onWork: addFetchAllWorks(state.onWork)
+      }
       return state
     })
+
     builder.addCase(fetchAllWorks.fulfilled, (state, action) => {
-      state = { ...state, ...action.payload, onWork: clearFetchAllWorks(state.onWork) }
-      return state
+      return {
+        ...state,
+        ...action.payload,
+        onWork: clearFetchAllWorks(state.onWork)
+      }
     })
+
     builder.addCase(fetchAllWorks.rejected, (state, action) => {
-      state = { ...state, onWork: clearFetchAllWorks(state.onWork), errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)] }
-      return state
+      return {
+        ...state,
+        onWork: clearFetchAllWorks(state.onWork),
+        errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)]
+      }
     })
 
 
     /** DELETE USER */
     builder.addCase(deleteWork.pending, (state, action) => {
-      state = { ...state, onWork: addDeleteWork(state.onWork) }
-      return state
+      return {
+        ...state,
+        onWork: addDeleteWork(state.onWork)
+      }
     })
+
     builder.addCase(deleteWork.fulfilled, (state, action) => {
-      return { ...deleteFromState(state, action.payload.workId), onWork: clearDeleteWork(state.onWork) }
+      return {
+        ...deleteFromState(state, action.payload.workId),
+        onWork: clearDeleteWork(state.onWork)
+      }
     })
     builder.addCase(deleteWork.rejected, (state, action) => {
-      state = { ...state, onWork: clearDeleteWork(state.onWork), errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)] }
-      return state
+      return {
+        ...state,
+        onWork: clearDeleteWork(state.onWork),
+        errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)]
+      }
     })
 
 
@@ -100,5 +129,9 @@ export const worksSlice = createSlice({
 
 })
 
-export const { setSuperStatus, setActionStatus } = worksSlice.actions
+export const { setStatus, setSuperStatus, setActionStatus, preCreateWork } = worksSlice.actions
 export default worksSlice.reducer
+function removeAllWorksPreCreating(state: WritableDraft<WorksState>) {
+  throw new Error("Function not implemented.")
+}
+

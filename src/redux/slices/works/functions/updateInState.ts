@@ -1,11 +1,13 @@
 import * as R from 'ramda'
 import { current } from "@reduxjs/toolkit"
 import { WorksState } from ".."
+import { WritableDraft } from "immer/dist/internal"
+
 import { ActionStatus, Work } from "../../../../typescript/work.type"
 
 export const updateInState
  = (
-  state: WorksState,
+  state: WritableDraft<WorksState>,
   currentWork: Work
 ) => {
   const currState = current(state)
