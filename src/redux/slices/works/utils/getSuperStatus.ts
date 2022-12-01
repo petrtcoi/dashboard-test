@@ -7,30 +7,29 @@ const isNotNil = R.complement(R.isNil)
 
 export function getSuperStatus(workId: WorkId, metaById: WorksState["metaById"]) {
   const meta = metaById[workId]
-  const prevNode = meta?.prevNode
-  const parentNode = meta?.parentNode
+  if (!meta) return null
+  const { prevNode, parentNode } = meta
 
-  if (prevNode) {
-    return R.clone(metaById[prevNode].superStatus)
-  }
-
+  if (prevNode) return R.clone(metaById[prevNode]?.superStatus)
   if (!parentNode) return null
+
+  
 
   const parentMeta = metaById[parentNode]
   return {
     ...parentMeta.superStatus,
     action:
       R.cond([
-        [R.always(parentMeta.status.action !== ActionStatus.Idle), R.always(parentMeta.status.action)],
-        [R.always(parentMeta.superStatus.action !== ActionStatus.Idle), R.always(parentMeta.superStatus.action)],
+        [R.always(parentMeta.status?.action !== ActionStatus.Idle), R.always(parentMeta.status.action)],
+        [R.always(parentMeta.superStatus?.action !== ActionStatus.Idle), R.always(parentMeta.superStatus.action)],
         [R.T, R.always(ActionStatus.Idle)]
       ])()
     ,
     drawBetweenUpperSiblings:
       R.ifElse(
         R.anyPass([
-          R.always(isNotNil(parentMeta.nextNode)),
-          R.always(parentMeta.superStatus.drawBetweenUpperSiblings === true)
+          () => isNotNil(parentMeta.nextNode),
+          () => parentMeta.superStatus.drawBetweenUpperSiblings === true
         ]),
         R.always(true),
         R.always(false)

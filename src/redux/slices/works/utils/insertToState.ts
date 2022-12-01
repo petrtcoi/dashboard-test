@@ -7,7 +7,7 @@ import { ActionStatus, Work, WorkId, WorkMeta } from "../../../../typescript/wor
 
 
 type PropsInsertToState = {
-  state: WritableDraft<WorksState>
+  state: WorksState
   work?: Work
   prevNode?: WorkId
   parentNode?: WorkId
@@ -60,13 +60,7 @@ export const insertToState = (props: PropsInsertToState): WorksState => {
     R.set(nextNodeLens, work.id),
     R.set(nextNodeParentPropLens, work.id),
     R.tap((x) => console.log('Добавили nextNodeParentPropLens', x)),
-
-    // R.pipe(
-    //   () => nextNodeLens !== null ? R.set(nextNodeLens, work.id) : R.always,
-    //   R.tap((x) => console.log('Добавили nextNodeLens', x)),
-    //   () => nextNodeParentPropLens !== null ? R.set(nextNodeParentPropLens, undefined) : R.always
-    // )
-  )(current(props.state)) as unknown as WorksState
+  )(props.state) as unknown as WorksState
 }
 
 

@@ -1,14 +1,17 @@
 import { createSlice, current, PayloadAction } from "@reduxjs/toolkit"
+import { fetchAllWorks, updateWork, deleteWork } from "./asyncThunks/"
+
 import * as R from 'ramda'
 
-import { fetchAllWorks, updateWork, deleteWork } from "./asyncThunks/"
-import { addFetchAllWorks, clearFetchAllWorks, clearUpdateWork, addDeleteWork, clearDeleteWork, addUpdateWork } from './utils/onWork'
-import { updateInState, deleteFromState } from "./functions/"
+import {
+  addDeleteWork, addFetchAllWorks, addUpdateWork, clearDeleteWork, clearFetchAllWorks, clearUpdateWork,
+  deleteFromState, insertToState, switchOffWorks, updateInState
+} from "./utils"
+
 
 import { ActionStatus, Work, WorkId, WorkMeta, WorkStatus } from '../../../typescript/work.type'
 import { ErrorLog, logError } from "../../../typescript/errorLog.type"
-import { insertToState } from './functions/insertToState'
-import { WritableDraft } from "immer/dist/internal"
+
 
 
 
@@ -39,91 +42,97 @@ export const worksSlice = createSlice({
   initialState,
 
   reducers: {
+
+    /** 
+     * Устанавливает значение META -> Status 
+     */
     setStatus: (state, action: PayloadAction<{ workId: WorkId, status: WorkStatus }>) => {
       const { workId, status } = action.payload
       state.metaById[workId].status = status
     },
+
+    /** 
+     * Устанавливает значение META -> SuperStatus 
+     */
     setSuperStatus: (state, action: PayloadAction<{ workId: WorkId, status: WorkStatus }>) => {
       const { workId, status } = action.payload
       return R.set(R.lensPath(['metaById', workId, 'superStatus']), status, current(state))
     },
+
+
+    /**
+     * Меняет статус Work
+     * Если это статус, не равный Idle, то все остальные Work переводятся в Idle.
+     * Также удаляем все Work, находящиеся в процессе создания
+     */
     setActionStatus: (state, action: PayloadAction<{ workId: WorkId, status: ActionStatus }>) => {
       const { workId, status } = action.payload
-      if (status !== ActionStatus.Idle) {
-        Object.keys(state.workById).forEach((id) => {
-          state.metaById[id as unknown as WorkId].status.action = ActionStatus.Idle
-        })
-      }
-      state.metaById[workId].status.action = status
+      const workActionLens = R.lensPath(['metaById', workId, 'status', 'action'])
+      return R.pipe(
+        R.ifElse(
+          () => status === ActionStatus.Idle,
+          () => state,
+          () => switchOffWorks(state)
+        ),
+        R.set(workActionLens, status)
+      )()
     },
+
+    /**
+     * Создает "временную" Work, которая потом будет сохранена в базу.
+     * Id работы берется как Date.now() со знаком минус
+     */
     preCreateWork: (state, action: PayloadAction<{ prevNode?: WorkId, parentNode?: WorkId }>) => {
-      return insertToState({ state, ...action.payload })
+      const currState: WorksState = R.clone(current(state))
+      return R.pipe(
+        () => switchOffWorks(state),
+        (state) => insertToState({ state, ...action.payload })
+      )()
     }
 
   },
 
   extraReducers: (builder) => {
 
-    /** FETCH ALL USERS */
+    /**
+     * Добавление новой Work
+    */
     builder.addCase(fetchAllWorks.pending, (state, action) => {
-      return {
-        ...state,
-        onWork: addFetchAllWorks(state.onWork)
-      }
-      return state
+      return { ...state, onWork: addFetchAllWorks(state.onWork) }
     })
-
     builder.addCase(fetchAllWorks.fulfilled, (state, action) => {
-      return {
-        ...state,
-        ...action.payload,
-        onWork: clearFetchAllWorks(state.onWork)
-      }
+      return { ...state, ...action.payload, onWork: clearFetchAllWorks(state.onWork) }
     })
-
     builder.addCase(fetchAllWorks.rejected, (state, action) => {
-      return {
-        ...state,
-        onWork: clearFetchAllWorks(state.onWork),
-        errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)]
-      }
+      return { ...state, onWork: clearFetchAllWorks(state.onWork), errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)] }
     })
 
 
-    /** DELETE USER */
+    /**
+    * Удаление  Work
+    */
     builder.addCase(deleteWork.pending, (state, action) => {
-      return {
-        ...state,
-        onWork: addDeleteWork(state.onWork)
-      }
+      return { ...state, onWork: addDeleteWork(state.onWork) }
     })
-
     builder.addCase(deleteWork.fulfilled, (state, action) => {
-      return {
-        ...deleteFromState(state, action.payload.workId),
-        onWork: clearDeleteWork(state.onWork)
-      }
+      return { ...deleteFromState(state, action.payload.workId), onWork: clearDeleteWork(state.onWork) }
     })
     builder.addCase(deleteWork.rejected, (state, action) => {
-      return {
-        ...state,
-        onWork: clearDeleteWork(state.onWork),
-        errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)]
-      }
+      return { ...state, onWork: clearDeleteWork(state.onWork), errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)] }
     })
 
 
-    /** UPDATE USER */
+    /**
+    * Update  Work
+    */
     builder.addCase(updateWork.pending, (state, action) => {
-      state = { ...state, onWork: addUpdateWork(state.onWork) }
-      return state
+      return { ...state, onWork: addUpdateWork(state.onWork) }
     })
     builder.addCase(updateWork.fulfilled, (state, action) => {
       return { ...updateInState(state, action.payload.current), onWork: clearUpdateWork(state.onWork) }
     })
     builder.addCase(updateWork.rejected, (state, action) => {
-      state = { ...state, onWork: clearUpdateWork(state.onWork), errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)] }
-      return state
+      return { ...state, onWork: clearUpdateWork(state.onWork), errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)] }
     })
   }
 
