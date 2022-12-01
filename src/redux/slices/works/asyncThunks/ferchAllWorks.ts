@@ -1,12 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import * as R from 'ramda'
-
 import * as api from './../../../../api/'
 
 import { WorksState } from ".."
 import { WorkGetListDto, WorkGetDto, castWorkDto, WorkStatus, VisibilityStatus, ActionStatus, WorkMeta, WorkId } from '../../../../typescript/work.type'
-import { getSuperStatus } from "../utils/getSuperStatus"
-import { logError } from '../../../../typescript/errorLog.type'
+
 
 
 type ApiData = { dto: WorkGetListDto }
