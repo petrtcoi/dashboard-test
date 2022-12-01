@@ -8,22 +8,21 @@ import { ActionStatus, Work, WorkId, WorkMeta } from "../../../../typescript/wor
 
 type PropsInsertToState = {
   state: WorksState
-  work?: Work
   prevNode?: WorkId
   parentNode?: WorkId
 }
 
 /**
  * Вставляем Work в workById и metaById возвращаем исправленный state
- * если Work не передается, то генерируется новая, со статусом ActionStatus.Creating 
+ * Добавляем только в State!
  */
-export const insertToState = (props: PropsInsertToState): WorksState => {
+export const preCreateWorkInState = (props: PropsInsertToState): WorksState => {
 
   const prevNode = props.prevNode || props.parentNode || null
   if (prevNode === null) return props.state
 
   const prevMeta = props.state.metaById[prevNode]
-  const work = props.work ? props.work : generateNewWork()
+  const work =  generateNewWork()
 
 
   /** Записываем данные, исходя из того: это добавиление prevNode или как childNode */
@@ -36,7 +35,7 @@ export const insertToState = (props: PropsInsertToState): WorksState => {
     nestingLevel: props.prevNode ? prevMeta.nestingLevel : prevMeta.nestingLevel + 1,
     status: {
       ...prevMeta.status,
-      action: props.work ? ActionStatus.Idle : ActionStatus.Creating
+      action: ActionStatus.Creating
     }
   })
 
@@ -45,11 +44,11 @@ export const insertToState = (props: PropsInsertToState): WorksState => {
   const newMetaLens = R.lensPath(['metaById', work.id])
   const prevNodeLens = R.lensPath(['metaById', prevNode, props.prevNode ? 'nextNode' : 'firstChildNode'])
 
-  const nextNodeLens = props.prevNode
+  /** Для простоты кода, если node не прописаны, то просто пишем в _trash  */
+  const nextNodePrevLens = props.prevNode
     ? R.lensPath(['metaById', prevMeta.nextNode || '_trash', 'prevNode'])
     : R.lensPath(['metaById', prevMeta.firstChildNode || '_trash', 'prevNode'])
-
-  const nextNodeParentPropLens = R.lensPath(['metaById', prevMeta.firstChildNode || '_trash', 'parentNode'])
+  const nextNodeParentLens = R.lensPath(['metaById', prevMeta.firstChildNode || '_trash', 'parentNode'])
 
 
   /** Вносим обновления в state */
@@ -57,8 +56,8 @@ export const insertToState = (props: PropsInsertToState): WorksState => {
     R.set(newMetaLens, newMeta),
     R.set(newWorkLens, work),
     R.set(prevNodeLens, work.id),
-    R.set(nextNodeLens, work.id),
-    R.set(nextNodeParentPropLens, work.id),
+    R.set(nextNodePrevLens, work.id),
+    R.set(nextNodeParentLens, work.id),
     R.tap((x) => console.log('Добавили nextNodeParentPropLens', x)),
   )(props.state) as unknown as WorksState
 }

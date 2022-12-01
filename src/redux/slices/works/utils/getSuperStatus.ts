@@ -13,11 +13,10 @@ export function getSuperStatus(workId: WorkId, metaById: WorksState["metaById"])
   if (prevNode) return R.clone(metaById[prevNode]?.superStatus)
   if (!parentNode) return null
 
-  
 
   const parentMeta = metaById[parentNode]
   return {
-    ...parentMeta.superStatus,
+    ...R.clone(parentMeta.superStatus),
     action:
       R.cond([
         [R.always(parentMeta.status?.action !== ActionStatus.Idle), R.always(parentMeta.status.action)],

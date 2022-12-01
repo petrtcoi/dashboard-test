@@ -13,8 +13,8 @@ export const watchSuperStatus = (workId: WorkId) => {
 
   React.useEffect(() => {
     if (superStatus === null) return
-    dispatch(setSuperStatus({ workId, status: superStatus }))
-  }, [superStatus])
+    // dispatch(setSuperStatus({ workId, status: superStatus }))
+  }, [])
   
 
 }

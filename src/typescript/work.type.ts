@@ -16,7 +16,7 @@ export type WorkStatus = {
   visibility: VisibilityStatus
   action: ActionStatus
   drawBetweenUpperSiblings: boolean
-  initChange: boolean
+  initChange?: boolean
 }
 
 

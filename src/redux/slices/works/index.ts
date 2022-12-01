@@ -5,7 +5,7 @@ import * as R from 'ramda'
 
 import {
   addDeleteWork, addFetchAllWorks, addUpdateWork, clearDeleteWork, clearFetchAllWorks, clearUpdateWork,
-  deleteFromState, insertToState, switchOffWorks, updateInState
+  deleteFromState, preCreateWorkInState, switchOffWorks, updateInState, updateSuperStatusDownfall
 } from "./utils"
 
 
@@ -56,7 +56,7 @@ export const worksSlice = createSlice({
      */
     setSuperStatus: (state, action: PayloadAction<{ workId: WorkId, status: WorkStatus }>) => {
       const { workId, status } = action.payload
-      return R.set(R.lensPath(['metaById', workId, 'superStatus']), status, current(state))
+      return R.set(R.lensPath(['metaById', workId, 'superStatus']), status, state)
     },
 
 
@@ -74,19 +74,30 @@ export const worksSlice = createSlice({
           () => state,
           () => switchOffWorks(state)
         ),
-        R.set(workActionLens, status)
+        R.set(workActionLens, status),
+        R.tap((x) => console.log('set state: ', x))
       )()
     },
+
+
+    /**
+     * Обновляет superState
+     */
+    updateSuperStateDownTree: (state, action: PayloadAction<{ workId?: WorkId }>) => {
+      return updateSuperStatusDownfall(action.payload.workId || state.rootWorkId, state)
+    },
+
+
+
 
     /**
      * Создает "временную" Work, которая потом будет сохранена в базу.
      * Id работы берется как Date.now() со знаком минус
      */
     preCreateWork: (state, action: PayloadAction<{ prevNode?: WorkId, parentNode?: WorkId }>) => {
-      const currState: WorksState = R.clone(current(state))
       return R.pipe(
         () => switchOffWorks(state),
-        (state) => insertToState({ state, ...action.payload })
+        (state) => preCreateWorkInState({ state, ...action.payload })
       )()
     }
 
@@ -138,5 +149,5 @@ export const worksSlice = createSlice({
 
 })
 
-export const { setStatus, setSuperStatus, setActionStatus, preCreateWork } = worksSlice.actions
+export const { setStatus, setSuperStatus, setActionStatus, preCreateWork, updateSuperStateDownTree } = worksSlice.actions
 export default worksSlice.reducer
