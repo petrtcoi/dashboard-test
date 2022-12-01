@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAppSelector } from '../../../../redux/hooks'
+import { useAppDispatch, useAppSelector } from '../../../../redux/hooks'
 import { selectMeta } from '../../../../redux/slices/works/selectors/selectMeta'
 import { WorkId } from '../../../../typescript/work.type'
 import { AddWorkButton } from './components/AddWorkButton'
@@ -15,6 +15,7 @@ import './IconsCell.styles.scss'
 // import { useAppSelector } from '../../../../redux/hooks/index'
 import { isNestedLevelCorrect } from '../../../../redux/slices/works/utils/isNestedLevelCorrect'
 import { isDisabled } from './IconCell.service'
+import { deleteWork } from '../../../../redux/slices/works/'
 
 const COL_WIDTH = 20
 
@@ -25,9 +26,11 @@ type IconsCellProps = {
 
 const IconsCell: React.FC<IconsCellProps> = (props) => {
 
+  const dispatch = useAppDispatch()
   const meta = useAppSelector(selectMeta(props.workId))
   const paddingLeft = `${(meta.nestingLevel - 1) * COL_WIDTH}px`
 
+  const handleDelete = () => dispatch(deleteWork({ workId: props.workId }))
 
 
   return (
@@ -67,6 +70,7 @@ const IconsCell: React.FC<IconsCellProps> = (props) => {
           disabled={ isDisabled(meta) }
           role='button'
           className={ `icon-button icon-remove icon-extended` }
+          onClick={ handleDelete }
         />
       </div>
 

@@ -1,12 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import * as R from 'ramda'
 
-import { fetchAllWorks } from "./asyncThunks/ferchAllWorks"
-import { addFetchAllWorks, clearFetchAllWorks } from "./utils/onWork"
+import { fetchAllWorks, updateWork, deleteWork } from "./asyncThunks/"
+import { addFetchAllWorks, clearFetchAllWorks, clearUpdateWork, addDeleteWork, clearDeleteWork, addUpdateWork } from './utils/onWork'
 
 import { ActionStatus, Work, WorkId, WorkMeta, WorkStatus } from "../../../typescript/work.type"
 import { ErrorLog, logError } from "../../../typescript/errorLog.type"
 import { selectSuperStatus } from './selectors/selectSuperStatus'
+import { deleteFromState } from "./functions/deleteFromState"
+import { updateInState } from "./functions/updateInState"
 
 
 
@@ -40,8 +42,13 @@ export const worksSlice = createSlice({
       const { workId, status } = action.payload
       state.metaById[workId].superStatus = status
     },
-    setActionStatus: (state, action: PayloadAction<{ workId: WorkId, status: ActionStatus }>)  => {
+    setActionStatus: (state, action: PayloadAction<{ workId: WorkId, status: ActionStatus }>) => {
       const { workId, status } = action.payload
+      if (status !== ActionStatus.Idle) {
+        Object.keys(state.workById).forEach((id) => {
+          state.metaById[id as unknown as WorkId].status.action = ActionStatus.Idle
+        })
+      }
       state.metaById[workId].status.action = status
     }
 
@@ -60,6 +67,34 @@ export const worksSlice = createSlice({
     })
     builder.addCase(fetchAllWorks.rejected, (state, action) => {
       state = { ...state, onWork: clearFetchAllWorks(state.onWork), errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)] }
+      return state
+    })
+
+
+    /** DELETE USER */
+    builder.addCase(deleteWork.pending, (state, action) => {
+      state = { ...state, onWork: addDeleteWork(state.onWork) }
+      return state
+    })
+    builder.addCase(deleteWork.fulfilled, (state, action) => {
+      return { ...deleteFromState(state, action.payload.workId), onWork: clearDeleteWork(state.onWork) }
+    })
+    builder.addCase(deleteWork.rejected, (state, action) => {
+      state = { ...state, onWork: clearDeleteWork(state.onWork), errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)] }
+      return state
+    })
+
+
+    /** UPDATE USER */
+    builder.addCase(updateWork.pending, (state, action) => {
+      state = { ...state, onWork: addUpdateWork(state.onWork) }
+      return state
+    })
+    builder.addCase(updateWork.fulfilled, (state, action) => {
+      return { ...updateInState(state, action.payload.current), onWork: clearUpdateWork(state.onWork) }
+    })
+    builder.addCase(updateWork.rejected, (state, action) => {
+      state = { ...state, onWork: clearUpdateWork(state.onWork), errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)] }
       return state
     })
   }

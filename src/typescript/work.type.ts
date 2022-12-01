@@ -1,6 +1,5 @@
 import Joi from 'joi'
 import * as R from 'ramda'
-import { removeWork } from '../redux/slices/works/functions/terminate'
 
 
 export type WorkId = number
@@ -82,13 +81,17 @@ export type CreateWorkDto =
   & NotUsedInfo
   & { parentId?: WorkId }
 
+
 export type WorkGetDto =
   Work
   & NotUsedInfo
   & { child: WorkGetDto[] }
 
+
 export type WorkGetListDto = WorkGetDto[]
 
+export type WorkChangedDto = Work & NotUsedInfo
+export type ApiUpdateResponse = { current: WorkChangedDto, changed: WorkChangedDto[] }
 
 
 /**

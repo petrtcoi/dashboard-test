@@ -1,12 +1,14 @@
 import React from 'react'
-import { Work, WorkId } from '../../../../typescript/work.type'
-import { connectUseForm } from './EditDataCells.service'
-import './EditDataCells.styles.scss'
+import { ActionStatus, WorkId } from '../../../../typescript/work.type'
+import { connectUseForm, useListenKeyboard } from './EditDataCells.service'
 import { useAppDispatch, useAppSelector } from '../../../../redux/hooks/index'
-// import { createWork } from '../../../../redux/slices/works/index'
 import { selectWork } from '../../../../redux/slices/works/selectors/selectWork'
 
-type EditDataCellsProps = { workId: WorkId}
+import './EditDataCells.styles.scss'
+import { setActionStatus, updateWork } from '../../../../redux/slices/works'
+
+
+type EditDataCellsProps = { workId: WorkId }
 
 const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
 
@@ -14,24 +16,24 @@ const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
   const work = useAppSelector(selectWork(props.workId))
   const { register, getValues } = connectUseForm(work)
 
+  const saveUpdates = () => {
+    dispatch(updateWork({ workId: props.workId, data: getValues() }))
+  }
+  const cancelEditing = () => {
+    dispatch(setActionStatus({ workId: props.workId, status: ActionStatus.Idle }))
+  }
 
-  React.useEffect(() => {
-    const keyDownHandler = (event: { key: string; preventDefault: () => void }) => {
-      if (event.key !== 'Enter') return
-      event.preventDefault()
-      // dispatch(createWork(({ ...props.work, ...getValues(), parentId: props.work._meta_.parentNode })))
-    }
-    document.addEventListener('keydown', keyDownHandler)
-    return () => {
-      document.removeEventListener('keydown', keyDownHandler)
-    }
-  }, [])
+  useListenKeyboard(saveUpdates, cancelEditing)
+
+
 
   return (
     <>
       <td>
+        <form id='work_input' />
         <input
-          form='someform'
+          width="200px"
+          form='work_input'
           type={ 'text' }
           placeholder='Укажите наименование работ'
           { ...register('rowName', { required: true }) }
@@ -39,6 +41,7 @@ const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
       </td>
       <td>
         <input
+          form='work_input'
           type={ 'number' }
           min={ 0 }
           placeholder='Зарплата'
@@ -47,6 +50,7 @@ const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
       </td>
       <td>
         <input
+          form='work_input'
           type={ 'number' }
           min={ 0 }
           placeholder='Оборудование'
@@ -55,6 +59,7 @@ const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
       </td>
       <td>
         <input
+          form='work_input'
           type={ 'number' }
           min={ 0 }
           placeholder='Накл.расходы'
@@ -63,6 +68,7 @@ const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
       </td>
       <td>
         <input
+          form='work_input'
           type={ 'number' }
           placeholder='Примерные доходы'
           { ...register('estimatedProfit', { required: true }) }
@@ -74,5 +80,4 @@ const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
 }
 
 export { EditDataCells }
-
 
