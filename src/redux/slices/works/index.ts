@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, current, PayloadAction } from "@reduxjs/toolkit"
 import * as R from 'ramda'
 
 import { fetchAllWorks, updateWork, deleteWork } from "./asyncThunks/"
@@ -45,7 +45,7 @@ export const worksSlice = createSlice({
     },
     setSuperStatus: (state, action: PayloadAction<{ workId: WorkId, status: WorkStatus }>) => {
       const { workId, status } = action.payload
-      state.metaById[workId].superStatus = status
+      return R.set(R.lensPath(['metaById', workId, 'superStatus']), status, current(state))
     },
     setActionStatus: (state, action: PayloadAction<{ workId: WorkId, status: ActionStatus }>) => {
       const { workId, status } = action.payload
@@ -131,7 +131,3 @@ export const worksSlice = createSlice({
 
 export const { setStatus, setSuperStatus, setActionStatus, preCreateWork } = worksSlice.actions
 export default worksSlice.reducer
-function removeAllWorksPreCreating(state: WritableDraft<WorksState>) {
-  throw new Error("Function not implemented.")
-}
-

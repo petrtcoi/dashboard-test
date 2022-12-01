@@ -27,7 +27,7 @@ export const insertToState = (props: PropsInsertToState): WorksState => {
 
 
   /** Записываем данные, исходя из того: это добавиление prevNode или как childNode */
-  const newMeta: WorkMeta = {
+  const newMeta: WorkMeta = R.clone({
     ...prevMeta,
     firstChildNode: undefined,
     prevNode: props.prevNode ? prevNode : undefined,
@@ -38,7 +38,7 @@ export const insertToState = (props: PropsInsertToState): WorksState => {
       ...prevMeta.status,
       action: props.work ? ActionStatus.Idle : ActionStatus.Creating
     }
-  }
+  })
 
 
   const newWorkLens = R.lensPath(['workById', work.id])
