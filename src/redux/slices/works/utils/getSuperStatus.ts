@@ -11,7 +11,7 @@ export function getSuperStatus(workId: WorkId, metaById: WorksState["metaById"])
   const parentNode = meta?.parentNode
 
   if (prevNode) {
-    return {...metaById[prevNode].superStatus}
+    return R.clone(metaById[prevNode].superStatus)
   }
 
   if (!parentNode) return null

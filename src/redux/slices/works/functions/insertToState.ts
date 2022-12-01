@@ -52,9 +52,6 @@ export const insertToState = (props: PropsInsertToState): WorksState => {
   const nextNodeParentPropLens = R.lensPath(['metaById', prevMeta.firstChildNode || '_trash', 'parentNode'])
 
 
-  console.log('almost ready')
-  console.log('state: ', current(props.state))
-
   /** Вносим обновления в state */
   return R.pipe(
     R.set(newMetaLens, newMeta),
