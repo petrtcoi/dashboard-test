@@ -3,12 +3,11 @@ import * as R from 'ramda'
 
 import { fetchAllWorks, updateWork, deleteWork } from "./asyncThunks/"
 import { addFetchAllWorks, clearFetchAllWorks, clearUpdateWork, addDeleteWork, clearDeleteWork, addUpdateWork } from './utils/onWork'
+import { updateInState, deleteFromState} from "./functions/"
 
 import { ActionStatus, Work, WorkId, WorkMeta, WorkStatus } from "../../../typescript/work.type"
 import { ErrorLog, logError } from "../../../typescript/errorLog.type"
-import { selectSuperStatus } from './selectors/selectSuperStatus'
-import { deleteFromState } from "./functions/deleteFromState"
-import { updateInState } from "./functions/updateInState"
+
 
 
 

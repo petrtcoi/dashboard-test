@@ -1,3 +1,2 @@
-export { preCreate } from './preCreate'
-export { removeWorkWithChild } from './remove'
-export { createWork } from './createWork'
+export { deleteFromState } from './deleteFromState'
+export { updateInState } from './updateInState'
