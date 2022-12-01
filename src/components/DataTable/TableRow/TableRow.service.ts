@@ -10,6 +10,7 @@ export const watchSuperStatus = (workId: WorkId) => {
 
   const dispatch = useAppDispatch()
   const superStatus = useAppSelector(selectSuperStatus(workId), shallowEqual)
+  if(workId < 0) console.log(superStatus)
 
   React.useEffect(() => {
     if (superStatus === null) return
