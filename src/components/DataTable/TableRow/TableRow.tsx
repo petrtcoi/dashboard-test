@@ -23,9 +23,9 @@ const TableRow: React.FC<TableRowProps> = (props) => {
   const dispatch = useAppDispatch()
 
   /** Сбрасывает счетчик initChange для обновления состояний всех node */
-  React.useEffect(() => {
-    dispatch(setSuperStatus({ workId: props.workId, status: { ...meta.status, initChange: true } }))
-  }, [])
+  // React.useEffect(() => {
+  //   dispatch(setSuperStatus({ workId: props.workId, status: { ...meta.status, initChange: true } }))
+  // }, [])
 
 
   if (R.isNil(isWorkExist)) return null

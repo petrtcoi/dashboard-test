@@ -4,70 +4,94 @@ import { ActionStatus, VisibilityStatus, WorkId, WorkMeta, WorkStatus } from '..
 
 const isNotNil = R.complement(R.isNil)
 
-export const updateSuperStatusDownfall = (workId: WorkId | undefined, state: WorksState): WorksState => {
+
+/**
+ * Устанавливает SuperStatus для Work
+ * и рекурсивно вызывает себя для NextNode и FirstChildNode
+ */
+export const updateSuperStatusDownfall = R.curry(_updateSuperStatusDownfall)
+function _updateSuperStatusDownfall(workId: WorkId | undefined, state: WorksState): WorksState {
 
   const superStatusLens = R.lensPath(['metaById', workId || '_trash', 'superStatus'])
-  const childNode = state.metaById[workId as WorkId]?.firstChildNode 
+  const childNode = state.metaById[workId as WorkId]?.firstChildNode
   const nextNode = state.metaById[workId as WorkId]?.nextNode
 
   return R.pipe(
+    R.always(workId),
     R.ifElse(
-      () => R.isNil(workId),
-      () => state,
+      R.isNil,
+      R.always(state),
       R.pipe(
-        () => getSelfSuperStatus(workId as WorkId, state),
+        getSelfSuperStatus(state),
         R.ifElse(
           R.isNil,
-          () => state,
-          R.pipe(
-            (superStatus) => R.set(superStatusLens, superStatus, state) as WorksState,
-            (state) => updateSuperStatusDownfall(nextNode, state),
-            (state) => updateSuperStatusDownfall(childNode, state),
-          )
-        )
+          R.always(state),
+          (superStatus) => R.set(superStatusLens, superStatus, state) as WorksState
+        ),
+        R.pipe(
+          R.tap(console.log),
+          (state) => updateSuperStatusDownfall(nextNode as WorkId, state),
+          (state) => updateSuperStatusDownfall(childNode as WorkId, state),
+        ),
       )
-    )
+    ),
+  )()
+
+}
+
+
+
+/**
+ * Определяет свой SuperStatus
+ */
+export const getSelfSuperStatus = R.curry(_getSelfSuperStatus)
+function _getSelfSuperStatus(state: WorksState, workId: WorkId) {
+
+  const meta = state.metaById[workId]
+  return R.pipe(
+    R.always(meta),
+    R.cond([
+      [R.isNil, R.always(undefined)],
+      [extractSuperStatusFromParent(state), extractSuperStatusFromParent(state)],
+      [getPrevNodeSuperStatus(state), getPrevNodeSuperStatus(state)],
+      [R.T, R.always(undefined)]
+    ]),
+  )()
+}
+
+
+/**
+ * Копирует SuperStatus из PrevNode
+ */
+export const getPrevNodeSuperStatus = R.curry(_getPrevNodeSuperStatus)
+function _getPrevNodeSuperStatus(state: WorksState, meta: WorkMeta) {
+
+  if (!meta.prevNode) return
+  return state.metaById[meta.prevNode]?.superStatus || undefined
+}
+
+
+/**
+ * Получает SuperStatus на основе Status / SuperStatus у ParentNode
+ */
+export const extractSuperStatusFromParent = R.curry(_extractSuperStatusFromParent)
+function _extractSuperStatusFromParent(state: WorksState, meta: WorkMeta) {
+
+  if (!meta.parentNode) return undefined
+  const parentMeta = state.metaById[meta.parentNode]
+
+  return R.pipe(
+    R.always(parentMeta.superStatus),
+    R.set(R.lensPath(['action']), extractParentAction(parentMeta)),
+    R.set(R.lensPath(['drawBetweenUpperSiblings']), extractDrawSiblingsLines(parentMeta)),
   )()
 }
 
 
 
 /**
- * Определяем собственный SuperStatus
+ * Получает status.action на основе ParentMeta
  */
-export const getSelfSuperStatus = (workId: WorkId, state: WorksState) => {
-  const meta = state.metaById[workId]
-  return R.pipe(
-    () => meta,
-    R.ifElse(
-      R.isNil,
-      () => undefined,
-      R.or(
-        () => getPrevNodeSuperStatus(meta, state),
-        () => extractSuperStatusFromParent(meta, state)
-      )
-    )
-  )()
-}
-
-
-export const getPrevNodeSuperStatus = (meta: WorkMeta, state: WorksState) => {
-  if (!meta.prevNode) return
-  return state.metaById[meta.prevNode]?.superStatus || undefined
-}
-
-export const extractSuperStatusFromParent = (meta: WorkMeta, state: WorksState) => {
-  if (!meta.parentNode) return
-  const parentMeta = state.metaById[meta.parentNode]
-  return R.pipe(
-    () => parentMeta.superStatus,
-    R.set(R.lensPath(['status', 'action']), extractParentAction(parentMeta)),
-    R.set(R.lensPath(['status', 'drawBetweenUpperSiblings']), extractDrawSiblingsLines(parentMeta)),
-  )()
-}
-
-
-
 export const extractParentAction = (parentMeta: WorkMeta) => {
   return R.cond([
     [R.always(parentMeta.status?.action !== ActionStatus.Idle), () => parentMeta.status.action],
@@ -76,23 +100,16 @@ export const extractParentAction = (parentMeta: WorkMeta) => {
   ])()
 }
 
+
+/**
+ * Определяет, нужно ли рисовыть линию для связи parentNode с NextNode
+ */
 export const extractDrawSiblingsLines = (parentMeta: WorkMeta) => {
-  return R.ifElse(
-    R.anyPass([
-      () => isNotNil(parentMeta.nextNode),
-      () => parentMeta.superStatus.drawBetweenUpperSiblings === true
-    ]),
-    R.always(true),
-    R.always(false)
-  )()
+  return R.anyPass([
+    () => isNotNil(parentMeta.nextNode),
+    () => parentMeta.superStatus.drawBetweenUpperSiblings === true
+  ])()
 }
 
 
 
-const getDefaultStatus = (): WorkStatus => {
-  return {
-    visibility: VisibilityStatus.Expanded,
-    action: ActionStatus.Idle,
-    drawBetweenUpperSiblings: false,
-  }
-}

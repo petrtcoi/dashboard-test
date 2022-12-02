@@ -12,9 +12,9 @@ import { WorkId } from "../../../../typescript/work.type"
  * так как они будут "почищены" при перезагрузке страницы, 
  * то такого решения должно быть достаточно.
  */
-export const deleteFromState = (
+export const _deleteFromState = (
+  workId: WorkId,
   state: WorksState,
-  workId: WorkId
 ) => {
   let newState = R.clone(state)
   const meta = newState.metaById[workId]
@@ -52,4 +52,6 @@ newState = R.set(lensMeta, undefined, newState)
 return newState
 
 }
+
+export const deleteFromState = R.curry(_deleteFromState)
 

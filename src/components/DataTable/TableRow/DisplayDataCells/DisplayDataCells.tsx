@@ -26,7 +26,7 @@ const DisplayDataCells: React.FC<DisplayDataCellsProps> = (props) => {
         className='row_name'
         onDoubleClick={ handleClick }
       >
-        { work.rowName } {blocked ? 'blocked' : ''}
+        { work.rowName } {props.workId} {blocked ? 'blocked' : ''}
       </td>
       <td>{ work.salary.toLocaleString() }</td>
       <td>{ work.materials.toLocaleString() }</td>

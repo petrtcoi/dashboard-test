@@ -11,10 +11,10 @@ export const watchSuperStatus = (workId: WorkId) => {
   const dispatch = useAppDispatch()
   const superStatus = useAppSelector(selectSuperStatus(workId), shallowEqual)
 
-  React.useEffect(() => {
-    if (superStatus === null) return
-    // dispatch(setSuperStatus({ workId, status: superStatus }))
-  }, [])
+  // React.useEffect(() => {
+  //   if (superStatus === null) return
+  //   dispatch(setSuperStatus({ workId, status: superStatus }))
+  // }, [])
   
 
 }

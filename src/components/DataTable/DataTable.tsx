@@ -5,9 +5,9 @@ import { TableRow } from './TableRow'
 
 import { useAppDispatch, useAppSelector } from '../../redux/hooks/index'
 import { selectWorkIdList } from '../../redux/slices/works/selectors/selectWorkIdList'
-import { updateSuperStateDownTree } from '../../redux/slices/works'
 
 import './DataTable.styles.scss'
+import { shallowEqual } from 'react-redux'
 
 
 
@@ -16,12 +16,7 @@ type DataTableProps = {}
 
 const DataTable: React.FC<DataTableProps> = (_props) => {
 
-  const workIdList = useAppSelector(selectWorkIdList)
-  const dispatch = useAppDispatch()
-  
-  React.useEffect(() => {
-    dispatch(updateSuperStateDownTree({}))
-  },[])
+  const workIdList = useAppSelector(selectWorkIdList, shallowEqual)  
  
   return (
     <table className='data-table'>
