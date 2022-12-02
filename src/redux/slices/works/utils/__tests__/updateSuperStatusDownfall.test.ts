@@ -7,7 +7,15 @@ import { extractDrawSiblingsLines, extractParentAction } from '../updateSuperSta
 import { mergeLeft } from 'ramda'
 
 describe('updateSuperStatusDownfall', () => { 
+
   
+  // describe('extractSuperStatusFromParent', () => {
+    
+
+  // })
+
+
+
   describe('extractParentAction', () => {
     const meta = fakeMeta()
     const statusIdle = fakeMetaStatus({action: ActionStatus.Idle})
