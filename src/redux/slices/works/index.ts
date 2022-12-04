@@ -58,8 +58,6 @@ export const worksSlice = createSlice({
     setSuperStatus: (state, action: PayloadAction<{ workId: WorkId, status: WorkStatus }>) => {
       const { workId, status } = action.payload
       const _state: WorksState = current(state)
-      // state.metaById[workId].superStatus = status
-      // const res = R.set(lens.state_SuperStatus(workId), status, state)
       return R.set(R.lensPath(['metaById', workId, 'superStatus']), status, _state)
     },
 
@@ -69,8 +67,8 @@ export const worksSlice = createSlice({
      * Если это статус, не равный Idle, то все остальные Work переводятся в Idle.
      * Также удаляем все Work, находящиеся в процессе создания
      */
-    setActionStatus: (state, action: PayloadAction<{ workId: WorkId, status: ActionStatus }>) => {
-      const { workId, status } = action.payload
+    setActionStatus: (state, action: PayloadAction<{ workId: WorkId, actionStatus: ActionStatus }>) => {
+      const { workId, actionStatus } = action.payload
       const _state: WorksState = current(state)
       return R.pipe(
         R.ifElse(
@@ -78,7 +76,8 @@ export const worksSlice = createSlice({
           () => _state,
           () => switchOffWorks(_state)
         ),
-        R.set(lens.state_StatusAction(workId), status),
+        R.tap((x) => console.log('set state: ', x)),
+        () => R.set(R.lensPath(['metaById', workId, 'status', 'action']), actionStatus, _state),
         R.tap((x) => console.log('set state: ', x))
       )()
     },

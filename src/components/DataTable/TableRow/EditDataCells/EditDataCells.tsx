@@ -20,7 +20,7 @@ const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
     dispatch(updateWork({ workId: props.workId, data: getValues() }))
   }
   const cancelEditing = () => {
-    dispatch(setActionStatus({ workId: props.workId, status: ActionStatus.Idle }))
+    dispatch(setActionStatus({ workId: props.workId, actionStatus: ActionStatus.Idle }))
   }
 
   useListenKeyboard(saveUpdates, cancelEditing)
