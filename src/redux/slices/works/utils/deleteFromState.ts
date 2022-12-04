@@ -15,43 +15,43 @@ import { WorkId } from "../../../../typescript/work.type"
 export const _deleteFromState = (
   workId: WorkId,
   state: WorksState,
-) => {
+): WorksState => {
   let newState = R.clone(state)
   const meta = newState.metaById[workId]
 
 
-if (!meta) return newState
+  if (!meta) return newState
 
-if (meta.prevNode) {
+  if (meta.prevNode) {
 
-  const lensPath = R.lensPath(['metaById', meta.prevNode, 'nextNode'])
-  newState = R.set(lensPath, meta.nextNode, newState)
+    const lensPath = R.lensPath(['metaById', meta.prevNode, 'nextNode'])
+    newState = R.set(lensPath, meta.nextNode, newState)
 
-  if (meta.nextNode) {
-    const lensPath = R.lensPath(['metaById', meta.nextNode, 'prevNode'])
-    newState = newState = R.set(lensPath, meta.prevNode, newState)
+    if (meta.nextNode) {
+      const lensPath = R.lensPath(['metaById', meta.nextNode, 'prevNode'])
+      newState = newState = R.set(lensPath, meta.prevNode, newState)
+    }
   }
-}
 
 
-if (meta.parentNode) {
-  const lensPath = R.lensPath(['metaById', meta.parentNode, 'firstChildNode'])
-  newState = R.set(lensPath, meta.nextNode, newState)
-  if (meta.nextNode) {
-    const lensPath = R.lensPath(['metaById', meta.nextNode, 'parentNode'])
-    newState = R.set(lensPath, meta.parentNode, newState)
+  if (meta.parentNode) {
+    const lensPath = R.lensPath(['metaById', meta.parentNode, 'firstChildNode'])
+    newState = R.set(lensPath, meta.nextNode, newState)
+    if (meta.nextNode) {
+      const lensPath = R.lensPath(['metaById', meta.nextNode, 'parentNode'])
+      newState = R.set(lensPath, meta.parentNode, newState)
+    }
   }
+
+  const lensWork = R.lensPath(['workById', workId])
+  newState = R.set(lensWork, undefined, newState)
+  const lensMeta = R.lensPath(['metaById', workId])
+  newState = R.set(lensMeta, undefined, newState)
+
+
+  return newState
+
 }
 
-const lensWork = R.lensPath(['workById', workId])
-newState = R.set(lensWork, undefined, newState)
-const lensMeta = R.lensPath(['metaById', workId])
-newState = R.set(lensMeta, undefined, newState)
-
-
-return newState
-
-}
-
-export const deleteFromState = R.curry(_deleteFromState)
+export const deleteFromState = _deleteFromState
 

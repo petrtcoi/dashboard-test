@@ -45,7 +45,6 @@ export function fakeMetaStatus(props: Partial<WorkStatus> = {}): WorkStatus {
     visibility: faker.helpers.arrayElement(Object.values(VisibilityStatus)),
     action: faker.helpers.arrayElement(Object.values(ActionStatus)),
     drawBetweenUpperSiblings: faker.datatype.boolean(),
-    initChange: faker.datatype.boolean()
   }
   return mergeDeepLeft(props, data)
 }

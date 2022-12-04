@@ -23,7 +23,7 @@ export const removeAllCreatingWorks = (state: WorksState) => {
   return Object.keys(state.workById)
     .reduce((acc: WorksState, workId) => {
       if (state.metaById[workId as any].status.action !== ActionStatus.Creating) return acc
-      return deleteFromState(acc, workId as any)
+      return deleteFromState(workId as any, acc)
     }, state)
 }
 

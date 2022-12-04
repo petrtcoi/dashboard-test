@@ -18,12 +18,13 @@ export const fetchAllWorks = createAsyncThunk<Promise<FetchAllWorksResult>>(
     const apiData = await api.works.getList()
     try {
       return R.pipe(
+        R.always(apiData),
         getApiData,
         getWorksById,
         getMetaById,
         getRootWorkId,
         removeDto
-      )(apiData)
+      )()
     } catch (err) {
       throw err
     }
@@ -108,7 +109,6 @@ const defaultWorkStatus: WorkStatus = {
   visibility: VisibilityStatus.Expanded,
   action: ActionStatus.Idle,
   drawBetweenUpperSiblings: false,
-  initChange: false,
 }
 
 

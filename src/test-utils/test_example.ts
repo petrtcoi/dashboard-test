@@ -60,17 +60,15 @@ const testState: WorksState = {
       nestingLevel: 1,
       status: {
         visibility: VisibilityStatus.Expanded,
-        action: ActionStatus.Idle,
-        drawBetweenUpperSiblings: false,
-        initChange: false
+        action: ActionStatus.Editing,
+        drawBetweenUpperSiblings: true,
       },
       nextNode: 22657,
       firstChildNode: 22663,
       superStatus: {
         visibility: VisibilityStatus.Expanded,
-        action: ActionStatus.Idle,
-        drawBetweenUpperSiblings: false,
-        initChange: false
+        action: ActionStatus.Creating,
+        drawBetweenUpperSiblings: true,
       }
     },
     '22657': {
@@ -79,7 +77,6 @@ const testState: WorksState = {
         visibility: VisibilityStatus.Expanded,
         action: ActionStatus.Idle,
         drawBetweenUpperSiblings: false,
-        initChange: false
       },
       prevNode: 22634,
       firstChildNode: 22659,
@@ -87,7 +84,6 @@ const testState: WorksState = {
         visibility: VisibilityStatus.Expanded,
         action: ActionStatus.Idle,
         drawBetweenUpperSiblings: false,
-        initChange: false
       }
     },
     '22659': {
@@ -96,14 +92,12 @@ const testState: WorksState = {
         visibility: VisibilityStatus.Expanded,
         action: ActionStatus.Idle,
         drawBetweenUpperSiblings: false,
-        initChange: false
       },
       parentNode: 22657,
       superStatus: {
         visibility: VisibilityStatus.Expanded,
         action: ActionStatus.Idle,
         drawBetweenUpperSiblings: false,
-        initChange: false
       }
     },
     '22663': {
@@ -112,7 +106,6 @@ const testState: WorksState = {
         visibility: VisibilityStatus.Expanded,
         action: ActionStatus.Idle,
         drawBetweenUpperSiblings: false,
-        initChange: false
       },
       parentNode: 22634,
       nextNode: 22664,
@@ -121,7 +114,6 @@ const testState: WorksState = {
         visibility: VisibilityStatus.Expanded,
         action: ActionStatus.Idle,
         drawBetweenUpperSiblings: false,
-        initChange: false
       }
     },
     '22664': {
@@ -130,14 +122,12 @@ const testState: WorksState = {
         visibility: VisibilityStatus.Expanded,
         action: ActionStatus.Idle,
         drawBetweenUpperSiblings: false,
-        initChange: false
       },
       prevNode: 22663,
       superStatus: {
         visibility: VisibilityStatus.Expanded,
         action: ActionStatus.Idle,
         drawBetweenUpperSiblings: false,
-        initChange: false
       }
     },
     '22665': {
@@ -146,14 +136,12 @@ const testState: WorksState = {
         visibility: VisibilityStatus.Expanded,
         action: ActionStatus.Idle,
         drawBetweenUpperSiblings: false,
-        initChange: false
       },
       parentNode: 22663,
       superStatus: {
         visibility: VisibilityStatus.Expanded,
         action: ActionStatus.Idle,
         drawBetweenUpperSiblings: false,
-        initChange: false
       }
     }
   },

@@ -36,7 +36,6 @@ function _updateSuperStatusDownfall(workId: WorkId | undefined, state: WorksStat
       )
     ),
   )()
-
 }
 
 
@@ -45,7 +44,7 @@ function _updateSuperStatusDownfall(workId: WorkId | undefined, state: WorksStat
  * Определяет свой SuperStatus
  */
 export const getSelfSuperStatus = R.curry(_getSelfSuperStatus)
-function _getSelfSuperStatus(state: WorksState, workId: WorkId) {
+function _getSelfSuperStatus(state: WorksState, workId: WorkId): WorkStatus | undefined {
 
   const meta = state.metaById[workId]
   return R.pipe(
@@ -56,7 +55,7 @@ function _getSelfSuperStatus(state: WorksState, workId: WorkId) {
       [getPrevNodeSuperStatus(state), getPrevNodeSuperStatus(state)],
       [R.T, R.always(undefined)]
     ]),
-  )()
+  )() as WorkStatus | undefined
 }
 
 
@@ -64,9 +63,9 @@ function _getSelfSuperStatus(state: WorksState, workId: WorkId) {
  * Копирует SuperStatus из PrevNode
  */
 export const getPrevNodeSuperStatus = R.curry(_getPrevNodeSuperStatus)
-function _getPrevNodeSuperStatus(state: WorksState, meta: WorkMeta) {
+function _getPrevNodeSuperStatus(state: WorksState, meta: WorkMeta):  WorkStatus | undefined {
 
-  if (!meta.prevNode) return
+  if (!meta.prevNode) return undefined
   return state.metaById[meta.prevNode]?.superStatus || undefined
 }
 
@@ -75,7 +74,7 @@ function _getPrevNodeSuperStatus(state: WorksState, meta: WorkMeta) {
  * Получает SuperStatus на основе Status / SuperStatus у ParentNode
  */
 export const extractSuperStatusFromParent = R.curry(_extractSuperStatusFromParent)
-function _extractSuperStatusFromParent(state: WorksState, meta: WorkMeta) {
+function _extractSuperStatusFromParent(state: WorksState, meta: WorkMeta): WorkStatus | undefined {
 
   if (!meta.parentNode) return undefined
   const parentMeta = state.metaById[meta.parentNode]

@@ -20,12 +20,7 @@ const TableRow: React.FC<TableRowProps> = (props) => {
   watchSuperStatus(props.workId)
   const isWorkExist = useAppSelector(selectIsWorkExist(props.workId))
   const meta = useAppSelector(selectMeta(props.workId))
-  const dispatch = useAppDispatch()
 
-  /** Сбрасывает счетчик initChange для обновления состояний всех node */
-  // React.useEffect(() => {
-  //   dispatch(setSuperStatus({ workId: props.workId, status: { ...meta.status, initChange: true } }))
-  // }, [])
 
 
   if (R.isNil(isWorkExist)) return null

@@ -25,7 +25,7 @@ export type WorksState = {
   rootWorkId?: WorkId
   workById: { [workId: WorkId]: Work }
   metaById: { [workId: WorkId]: WorkMeta }
-  onWork: { [key: string]: true }  // ждет ответ с сервера
+  onWork: { [key: string]: true | undefined }  // ждет ответ с сервера
   errorLogs: ErrorLog[]    // сообщениz об ошибке
 }
 const initialState: WorksState = {
@@ -57,7 +57,10 @@ export const worksSlice = createSlice({
      */
     setSuperStatus: (state, action: PayloadAction<{ workId: WorkId, status: WorkStatus }>) => {
       const { workId, status } = action.payload
-      return R.set(lens.state_SuperStatus(workId), status, state)
+      const _state: WorksState = current(state)
+      // state.metaById[workId].superStatus = status
+      // const res = R.set(lens.state_SuperStatus(workId), status, state)
+      return R.set(R.lensPath(['metaById', workId, 'superStatus']), status, _state)
     },
 
 
@@ -68,11 +71,12 @@ export const worksSlice = createSlice({
      */
     setActionStatus: (state, action: PayloadAction<{ workId: WorkId, status: ActionStatus }>) => {
       const { workId, status } = action.payload
+      const _state: WorksState = current(state)
       return R.pipe(
         R.ifElse(
           () => status === ActionStatus.Idle,
-          () => state,
-          () => switchOffWorks(state)
+          () => _state,
+          () => switchOffWorks(_state)
         ),
         R.set(lens.state_StatusAction(workId), status),
         R.tap((x) => console.log('set state: ', x))
@@ -80,13 +84,6 @@ export const worksSlice = createSlice({
     },
 
 
-    /**
-     * Обновляет superState
-     */
-    // updateSuperStateDownTree: (state, action: PayloadAction<{ workId?: WorkId }>) => {
-    //   const currState = current(state)
-    //   return updateSuperStatusDownfall(action.payload.workId || currState.rootWorkId, currState)
-    // },
 
 
 
@@ -109,16 +106,16 @@ export const worksSlice = createSlice({
     /**
      * Добавление новой Work
     */
-    builder.addCase(fetchAllWorks.pending, (state, action) => {
-      const _state = current(state)
+    builder.addCase(fetchAllWorks.pending, (state: WorksState, _action) => {
+      const _state: WorksState = current(state)
       return R.pipe(
         R.always(_state),
         R.set(R.lensPath(['onWork', onWork.fetchAllWorks()]), true),
       )()
     })
 
-    builder.addCase(fetchAllWorks.fulfilled, (state, action) => {
-      const _state = current(state)
+    builder.addCase(fetchAllWorks.fulfilled, (state: WorksState, action) => {
+      const _state: WorksState = current(state)
       return R.pipe(
         R.always(_state),
         R.mergeLeft(action.payload),
@@ -127,9 +124,9 @@ export const worksSlice = createSlice({
       )()
     })
 
-    builder.addCase(fetchAllWorks.rejected, (state, action) => {
+    builder.addCase(fetchAllWorks.rejected, (state: WorksState, action) => {
       const errorLog = logError(null, 'fetchAllWorks', action.error.message)
-      const _state = current(state)
+      const _state: WorksState = current(state)
       return R.pipe(
         R.always(_state),
         R.set(R.lensPath(['onWork', onWork.fetchAllWorks()]), undefined),
@@ -141,27 +138,27 @@ export const worksSlice = createSlice({
     /**
     * Удаление  Work
     */
-    builder.addCase(deleteWork.pending, (state, action) => {
-      const _state = current(state)
-     
+    builder.addCase(deleteWork.pending, (state: WorksState, action) => {
+      const _state: WorksState = current(state)
+
       return R.pipe(
         R.always(_state),
-        R.set(R.lensPath(['onWork', onWork.deleteWork(action.meta.arg.workId)]), true)
+        R.set(R.lensPath(['onWork', onWork.deleteWork(action.meta.arg.workId)]), true),
       )()
     })
 
-    builder.addCase(deleteWork.fulfilled, (state, action) => {
-      const _state = current(state)
+    builder.addCase(deleteWork.fulfilled, (state: WorksState, action) => {
+      const _state: WorksState = current(state)
       return R.pipe(
         R.always(_state),
-        deleteFromState(action.payload.workId),
+        () => deleteFromState(action.payload.workId, _state),
         R.set(R.lensPath(['onWork', onWork.deleteWork(action.meta.arg.workId)]), undefined),
       )()
     })
 
-    builder.addCase(deleteWork.rejected, (state, action) => {
+    builder.addCase(deleteWork.rejected, (state: WorksState, action) => {
       const errorLog = logError(action.meta.arg.workId, 'deleteWork', action.error.message)
-      const _state = current(state)
+      const _state: WorksState = current(state)
       return R.pipe(
         R.always(_state),
         R.set(R.lensPath(['onWork', onWork.deleteWork(action.meta.arg.workId)]), undefined),
@@ -173,13 +170,13 @@ export const worksSlice = createSlice({
     /**
     * Update  Work
     */
-    builder.addCase(updateWork.pending, (state, action) => {
+    builder.addCase(updateWork.pending, (state: WorksState, action) => {
       return { ...state, onWork: addUpdateWork(state.onWork) }
     })
-    builder.addCase(updateWork.fulfilled, (state, action) => {
+    builder.addCase(updateWork.fulfilled, (state: WorksState, action) => {
       return { ...updateInState(state, action.payload.current), onWork: clearUpdateWork(state.onWork) }
     })
-    builder.addCase(updateWork.rejected, (state, action) => {
+    builder.addCase(updateWork.rejected, (state: WorksState, action) => {
       return { ...state, onWork: clearUpdateWork(state.onWork), errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)] }
     })
   }
