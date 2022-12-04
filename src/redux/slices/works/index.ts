@@ -2,7 +2,6 @@ import { createSlice, current, PayloadAction } from "@reduxjs/toolkit"
 import { fetchAllWorks, updateWork, deleteWork } from "./asyncThunks/"
 
 import * as R from 'ramda'
-import * as lens from './../../../ramda/lens'
 
 import {
   addDeleteWork, onWork, addUpdateWork, clearDeleteWork, clearUpdateWork,
@@ -12,7 +11,6 @@ import {
 
 import { ActionStatus, Work, WorkId, WorkMeta, WorkStatus } from '../../../typescript/work.type'
 import { ErrorLog, logError } from "../../../typescript/errorLog.type"
-
 
 
 
@@ -77,7 +75,7 @@ export const worksSlice = createSlice({
           () => switchOffWorks(_state)
         ),
         R.tap((x) => console.log('set state: ', x)),
-        () => R.set(R.lensPath(['metaById', workId, 'status', 'action']), actionStatus, _state),
+        R.set(R.lensPath(['metaById', workId, 'status', 'action']), actionStatus),
         R.tap((x) => console.log('set state: ', x))
       )()
     },
