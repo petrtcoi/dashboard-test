@@ -32,7 +32,6 @@ describe('updateSuperStatusDownfall', () => {
       const state = { metaById } as WorksState
       const newStatus = getSelfSuperStatus(state, workId)
       expect(newStatus?.action).toBe(ActionStatus.Creating)
-      expect(newStatus?.drawBetweenUpperSiblings).toBe(true)
     })
     it('get superStatus from prevNode SuperStatus if no parentNode ', () => {
       const [workId, _metaById] = stateMetaWithNearestNodes()
