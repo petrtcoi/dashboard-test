@@ -30,7 +30,8 @@ export type Work = {
   estimatedProfit: number
 }
 /** Убирает лишние поля из WorkGetDto, чтобы получить Work */
-export const castWorkDto = (obj: WorkGetDto): Work => R.pick(['id', 'rowName', 'overheads', 'salary', 'materials', 'estimatedProfit'], obj)
+export const castWorkDto = (obj: WorkGetDto | Work): Work => R.pick(['id', 'rowName', 'overheads', 'salary', 'materials', 'estimatedProfit'], obj)
+export const castWorkAny = (obj: any): Partial<Work> => R.pick(['id', 'rowName', 'overheads', 'salary', 'materials', 'estimatedProfit'], obj)
 
 
 export type WorkMeta = {
@@ -90,6 +91,7 @@ export type WorkGetDto =
 export type WorkGetListDto = WorkGetDto[]
 
 export type WorkChangedDto = Work & NotUsedInfo
+export type ApiDeleteResponse = { current: WorkChangedDto, changed: WorkChangedDto[], deletedWorkId: WorkId }
 export type ApiUpdateResponse = { current: WorkChangedDto, changed: WorkChangedDto[] }
 export type ApiCreateResponse = { current: WorkChangedDto, changed: WorkChangedDto[], preCreateWorkId: WorkId }
 

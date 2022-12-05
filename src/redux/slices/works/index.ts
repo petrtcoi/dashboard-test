@@ -13,6 +13,7 @@ import { ActionStatus, Work, WorkId, WorkMeta, WorkStatus } from '../../../types
 import { ErrorLog, logError } from "../../../typescript/errorLog.type"
 import { replaceWorkIdInState } from "./utils/replaceWorkIdInState"
 import { addWorkToStateWorkById } from "./utils/addWorkToStateWorkById"
+import { updateChangedWorks } from "./utils/updateChangedWorks"
 
 
 
@@ -154,10 +155,13 @@ export const worksSlice = createSlice({
 
     builder.addCase(deleteWork.fulfilled, (state: WorksState, action) => {
       const _state: WorksState = current(state)
+      const handleChanges = updateChangedWorks(action.payload.changed)
+
       return R.pipe(
         R.always(_state),
-        () => deleteFromState(action.payload.workId, _state),
+        () => deleteFromState(action.payload.deletedWorkId, _state),
         R.set(R.lensPath(['onWork', onWork.deleteWork(action.meta.arg.workId)]), undefined),
+        handleChanges
       )()
     })
 
@@ -176,13 +180,33 @@ export const worksSlice = createSlice({
     * Update  Work
     */
     builder.addCase(updateWork.pending, (state: WorksState, action) => {
-      return { ...state, onWork: addUpdateWork(state.onWork) }
+      const _state: WorksState = current(state)
+      return R.pipe(
+        R.always(_state),
+        R.set(R.lensPath(['onWork', onWork.updateWork(action.meta.arg.workId)]), true),
+      )()
     })
+
     builder.addCase(updateWork.fulfilled, (state: WorksState, action) => {
-      return { ...updateInState(state, action.payload.current), onWork: clearUpdateWork(state.onWork) }
+      const _state: WorksState = current(state)
+      const handleChanges = updateChangedWorks(action.payload.changed)
+
+      return R.pipe(
+        () => updateInState(_state, action.payload.current),
+        R.set(R.lensPath(['onWork', onWork.updateWork(action.meta.arg.workId)]), undefined),
+        handleChanges
+      )()
     })
+
     builder.addCase(updateWork.rejected, (state: WorksState, action) => {
-      return { ...state, onWork: clearUpdateWork(state.onWork), errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)] }
+      const errorLog = logError(action.meta.arg.data.id, 'updateWork', action.error.message)
+      const _state: WorksState = current(state)
+
+      return R.pipe(
+        R.always(_state),
+        R.set(R.lensPath(['onWork', onWork.updateWork(action.meta.arg.workId)]), undefined),
+        R.set(R.lensPath(['errorLogs']), R.append(errorLog, _state.errorLogs)),
+      )()
     })
 
     /**
@@ -202,20 +226,23 @@ export const worksSlice = createSlice({
       const _state: WorksState = current(state)
       const addToStateWorkById = addWorkToStateWorkById(action.payload.current)
       const replaceIdsForNewWork = replaceWorkIdInState(action.payload.current.id, action.payload.preCreateWorkId)
-    
+
+      const handleChanges = updateChangedWorks(action.payload.changed)
+
       return R.pipe(
         R.always(_state),
         addToStateWorkById,
         replaceIdsForNewWork,
         R.set(R.lensPath(['metaById', action.payload.current.id, 'status', 'action']), ActionStatus.Idle),
         R.set(R.lensPath(['onWork', onWork.addWork(action.meta.arg.workId)]), undefined),
+        handleChanges
       )()
     })
 
     builder.addCase(createWork.rejected, (state: WorksState, action) => {
       const errorLog = logError(action.meta.arg.data.id, 'createWork', action.error.message)
       const _state: WorksState = current(state)
-      
+
       return R.pipe(
         R.always(_state),
         R.set(R.lensPath(['onWork', onWork.addWork(action.meta.arg.workId)]), undefined),

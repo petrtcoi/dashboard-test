@@ -82,9 +82,7 @@ describe('updateSuperStatusDownfall', () => {
     const metaWithNextNode = fakeMeta({ nextNode: faker.datatype.number() })
     const { nextNode, ...metaWithoutNextNode } = fakeMeta()
 
-    it('return TRUE if meta with nextNode', () => {
-      expect(extractDrawSiblingsLines(metaWithNextNode)).toBe(true)
-    })
+
     it('return FALSE if meta without nextNode and with SupseStatus drawingsSibligLines = false', () => {
       const superStatus = fakeMetaStatus({ drawBetweenUpperSiblings: false })
       const data = R.mergeLeft({ superStatus }, metaWithoutNextNode)
