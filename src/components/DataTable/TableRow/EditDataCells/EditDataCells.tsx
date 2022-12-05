@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../../../redux/hooks/index'
 import { selectWork } from '../../../../redux/slices/works/selectors/selectWork'
 
 import './EditDataCells.styles.scss'
-import { cancelCreatingTask, setActionStatus, updateWork } from '../../../../redux/slices/works'
+import { cancelCreatingTask, createWork, setActionStatus, updateWork } from '../../../../redux/slices/works'
 import { selectMeta } from '../../../../redux/slices/works/selectors/selectMeta'
 
 
@@ -19,7 +19,12 @@ const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
   const { register, getValues } = connectUseForm(work)
 
   const saveUpdates = () => {
-    dispatch(updateWork({ workId: props.workId, data: getValues() }))
+    if (meta.status.action === ActionStatus.Creating) {
+      dispatch(createWork({ data: getValues(), workId: work.id, parentId: meta.parentNode}))
+    } else {
+      dispatch(updateWork({ workId: props.workId, data: getValues() }))
+    }
+    
   }
   const cancelEditing = () => {
     if (meta.status.action === ActionStatus.Creating) {

@@ -11,11 +11,12 @@ import { RootState } from '../../../store'
 export const selectWorkIdList = (state: RootState) => {
   const rootWorkId = state.works.rootWorkId
   return (
-    R.ifElse(
-      R.always(R.isNil(rootWorkId)),
-      R.always([]),
-      // @ts-ignore
-      R.always(addWork(rootWorkId, [], state.works.metaById))
+    R.pipe(
+      R.ifElse(
+        R.always(R.isNil(rootWorkId)),
+        R.always([]),
+        R.always(addWork(rootWorkId, [], state.works.metaById))
+      )
     )()
   )
 }

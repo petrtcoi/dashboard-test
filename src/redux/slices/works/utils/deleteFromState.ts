@@ -4,6 +4,7 @@ import { WorksState } from ".."
 import { WritableDraft } from "immer/dist/internal"
 import { WorkId } from "../../../../typescript/work.type"
 
+const isNotNil = R.complement(R.isNil)
 
 /**
  * Это не полное удаление: мы просто убираем WORK из дерева, переводя
@@ -12,57 +13,31 @@ import { WorkId } from "../../../../typescript/work.type"
  * так как они будут "почищены" при перезагрузке страницы, 
  * то такого решения должно быть достаточно.
  */
-export const _deleteFromState = (
-  workId: WorkId,
-  state: WorksState,
-): WorksState => {
+export const _deleteFromState = (workId: WorkId, state: WorksState): WorksState => {
   let newState = R.clone(state)
   const meta = newState.metaById[workId]
 
-
   if (!meta) return newState
 
-  if (meta.prevNode) {
-    const lensPath = R.lensPath(['metaById', meta.prevNode, 'nextNode'])
-    newState = R.set(lensPath, meta.nextNode, newState)
-
-    if (meta.nextNode) {
-      const lensPath = R.lensPath(['metaById', meta.nextNode, 'prevNode'])
-      newState = R.set(lensPath, meta.prevNode, newState)
-    }
-  }
 
 
-  if (meta.parentNode) {
-    const lensPath = R.lensPath(['metaById', meta.parentNode, 'firstChildNode'])
-    newState = R.set(lensPath, meta.nextNode, newState)
-    if (meta.nextNode) {
-      const lensPath = R.lensPath(['metaById', meta.nextNode, 'parentNode'])
-      newState = R.set(lensPath, meta.parentNode, newState)
-    }
-  }
-
-  if (meta.nextNode && !meta.parentNode) {
-    console.log('try remove root')
-    const nextNodePrevLens = R.lensPath(['metaById', meta.nextNode, 'prevNode'])
-    const nextNodeParentLens = R.lensPath(['metaById', meta.nextNode, 'paretNode'])
-    return R.pipe(
-      R.always(newState),
-      R.set(nextNodePrevLens, undefined),
-      R.set(nextNodeParentLens, undefined),
-      R.set(R.lensPath(['rootNode']), meta.nextNode)
-    )()
-    // newState = R.set(lensPath, meta.prevNode, newState)
-  }
-
-  const lensWork = R.lensPath(['workById', workId])
-  newState = R.set(lensWork, undefined, newState)
-  const lensMeta = R.lensPath(['metaById', workId])
-  newState = R.set(lensMeta, undefined, newState)
-
-
-  return newState
-
+  return R.pipe(
+    R.always(newState),
+    R.when((R.always(isNotNil(meta.prevNode))),
+      R.set(R.lensPath(['metaById', meta.prevNode as WorkId, 'nextNode']), meta.nextNode)
+    ),
+    R.when(R.always(isNotNil(meta.nextNode)),
+      R.pipe(
+        R.set(R.lensPath(['metaById', meta.nextNode as WorkId, 'prevNode']), meta.prevNode),
+        R.set(R.lensPath(['metaById', meta.nextNode as WorkId, 'parentNode']), meta.parentNode)
+      )
+    ),
+    R.when(R.always(isNotNil(meta.parentNode)),
+      R.set(R.lensPath(['metaById', meta.parentNode as WorkId, 'firstChildNode']), meta.nextNode)
+    ),
+    R.when(R.allPass([R.always(R.isNil(meta.parentNode)), R.always(R.isNil(meta.prevNode))]),
+      R.set(R.lensPath(['rootWorkId']), meta.nextNode)),
+  )()
 }
 
 export const deleteFromState = _deleteFromState

@@ -11,7 +11,7 @@ export const updateInState
   currentWork: Work
 ) => {
   const currState = current(state)
-  const work = R.pick(['id', 'rowName', 'overheads', 'salary', 'materials', 'estimatedProfit'], currentWork)
+  const work: Work = R.pick(['id', 'rowName', 'overheads', 'salary', 'materials', 'estimatedProfit'], currentWork)
 
   let newState = R.assocPath(['workById', work.id], work, currState)
   

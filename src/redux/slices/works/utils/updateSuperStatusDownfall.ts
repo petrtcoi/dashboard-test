@@ -29,14 +29,13 @@ function _updateSuperStatusDownfall(workId: WorkId | undefined, state: WorksStat
           (superStatus) => R.set(superStatusLens, superStatus, state) as WorksState
         ),
         R.pipe(
-          R.tap(console.log),
           (state) => updateSuperStatusDownfall(nextNode as WorkId, state),
           (state) => updateSuperStatusDownfall(childNode as WorkId, state),
         ),
       )
     ),
   )()
-} 
+}
 
 
 

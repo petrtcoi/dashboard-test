@@ -58,7 +58,6 @@ export const preCreateWorkInState = (props: PropsInsertToState): WorksState => {
     R.set(prevNodeLens, work.id),
     R.set(nextNodePrevLens, work.id),
     R.set(nextNodeParentLens, work.id),
-    R.tap((x) => console.log('Добавили nextNodeParentPropLens', x)),
   )(props.state) as unknown as WorksState
 }
 

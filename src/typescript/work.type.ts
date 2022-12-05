@@ -75,7 +75,7 @@ export function genEmptyNotUserInfo(): NotUsedInfo {
  * Обмен информацией с сервером
  */
 
-export type CreateWorkDto =
+export type WorkCreateDto =
   Omit<Work, 'id'>
   & NotUsedInfo
   & { parentId?: WorkId }
@@ -91,6 +91,24 @@ export type WorkGetListDto = WorkGetDto[]
 
 export type WorkChangedDto = Work & NotUsedInfo
 export type ApiUpdateResponse = { current: WorkChangedDto, changed: WorkChangedDto[] }
+export type ApiCreateResponse = { current: WorkChangedDto, changed: WorkChangedDto[], preCreateWorkId: WorkId }
+
+
+
+export const workUselessData = {
+  "equipmentCosts": 0,
+  "estimatedProfit": 0,
+  "machineOperatorSalary": 0,
+  "mainCosts": 0,
+  "materials": 0,
+  "mimExploitation": 0,
+  "overheads": 0,
+  "rowName": "",
+  "salary": 0,
+  "supportCosts": 0
+}
+
+
 
 
 /**
