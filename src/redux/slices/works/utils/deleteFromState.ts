@@ -23,13 +23,12 @@ export const _deleteFromState = (
   if (!meta) return newState
 
   if (meta.prevNode) {
-
     const lensPath = R.lensPath(['metaById', meta.prevNode, 'nextNode'])
     newState = R.set(lensPath, meta.nextNode, newState)
 
     if (meta.nextNode) {
       const lensPath = R.lensPath(['metaById', meta.nextNode, 'prevNode'])
-      newState = newState = R.set(lensPath, meta.prevNode, newState)
+      newState = R.set(lensPath, meta.prevNode, newState)
     }
   }
 
@@ -41,6 +40,19 @@ export const _deleteFromState = (
       const lensPath = R.lensPath(['metaById', meta.nextNode, 'parentNode'])
       newState = R.set(lensPath, meta.parentNode, newState)
     }
+  }
+
+  if (meta.nextNode && !meta.parentNode) {
+    console.log('try remove root')
+    const nextNodePrevLens = R.lensPath(['metaById', meta.nextNode, 'prevNode'])
+    const nextNodeParentLens = R.lensPath(['metaById', meta.nextNode, 'paretNode'])
+    return R.pipe(
+      R.always(newState),
+      R.set(nextNodePrevLens, undefined),
+      R.set(nextNodeParentLens, undefined),
+      R.set(R.lensPath(['rootNode']), meta.nextNode)
+    )()
+    // newState = R.set(lensPath, meta.prevNode, newState)
   }
 
   const lensWork = R.lensPath(['workById', workId])
