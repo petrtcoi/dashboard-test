@@ -29,7 +29,7 @@ describe('updateSuperStatusDownfall', () => {
         R.set(R.lensPath([parentNode, 'status', 'action']), ActionStatus.Creating),
         R.set(R.lensPath([parentNode, 'status', 'drawBetweenUpperSiblings']), true)
       )()
-      const state = { metaById }  as WorksState
+      const state = { metaById } as WorksState
       const newStatus = getSelfSuperStatus(state, workId)
       expect(newStatus?.action).toBe(ActionStatus.Creating)
       expect(newStatus?.drawBetweenUpperSiblings).toBe(true)
@@ -43,7 +43,7 @@ describe('updateSuperStatusDownfall', () => {
         R.set(R.lensPath([prevNode, 'superStatus', 'action']), ActionStatus.Creating),
         R.set(R.lensPath([prevNode, 'superStatus', 'drawBetweenUpperSiblings']), true)
       )()
-      const state = { metaById }  as WorksState
+      const state = { metaById } as WorksState
       const newStatus = getSelfSuperStatus(state, workId)
       expect(newStatus?.action).toBe(ActionStatus.Creating)
       expect(newStatus?.drawBetweenUpperSiblings).toBe(true)
@@ -91,10 +91,17 @@ describe('updateSuperStatusDownfall', () => {
       const data = R.mergeLeft({ superStatus }, metaWithoutNextNode)
       expect(extractDrawSiblingsLines(data)).toBe(false)
     })
-    it('return TRUE if meta without nextNode but with SupseStatus drawingsSibligLines = true', () => {
-      const superStatus = fakeMetaStatus({ drawBetweenUpperSiblings: true })
-      const data = R.mergeLeft({ superStatus }, metaWithoutNextNode)
+    it('return TRUE if meta without nextNode, but ParentNode with nextNode and nestedLevel > 1', () => {
+      const data = { ...metaWithoutNextNode, nextNode: 123, nestingLevel: 2 }
       expect(extractDrawSiblingsLines(data)).toBe(true)
+    })
+    it('return FALSE if meta without nextNode, but ParentNode with nextNode and nestedLevel == 1', () => {
+      const data = { ...metaWithoutNextNode, nextNode: 123, nestingLevel: 1 }
+      expect(extractDrawSiblingsLines(data)).toBe(false)
+    })
+    it('return FALSE if meta without nextNode, but ParentNode without nextNode', () => {
+      const data = { ...metaWithoutNextNode, nextNode: undefined, nestingLevel: 3 }
+      expect(extractDrawSiblingsLines(data)).toBe(false)
     })
 
   })

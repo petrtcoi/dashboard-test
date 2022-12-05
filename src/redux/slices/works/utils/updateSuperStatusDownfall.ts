@@ -62,7 +62,7 @@ function _getSelfSuperStatus(state: WorksState, workId: WorkId): WorkStatus | un
  * Копирует SuperStatus из PrevNode
  */
 export const getPrevNodeSuperStatus = R.curry(_getPrevNodeSuperStatus)
-function _getPrevNodeSuperStatus(state: WorksState, meta: WorkMeta):  WorkStatus | undefined {
+function _getPrevNodeSuperStatus(state: WorksState, meta: WorkMeta): WorkStatus | undefined {
 
   if (!meta.prevNode) return undefined
   return state.metaById[meta.prevNode]?.superStatus || undefined
@@ -102,9 +102,9 @@ export const extractParentAction = (parentMeta: WorkMeta) => {
  * Определяет, нужно ли рисовыть линию для связи parentNode с NextNode
  */
 export const extractDrawSiblingsLines = (parentMeta: WorkMeta) => {
-  return R.anyPass([
-    () => isNotNil(parentMeta.nextNode),
-    () => parentMeta.superStatus.drawBetweenUpperSiblings === true
+  return R.allPass([
+    () => !!parentMeta.nextNode,
+    () => parentMeta.nestingLevel > 1
   ])()
 }
 
