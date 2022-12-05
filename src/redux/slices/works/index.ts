@@ -191,12 +191,12 @@ export const worksSlice = createSlice({
 
     builder.addCase(createWork.pending, (state: WorksState, action) => {
       const _state: WorksState = current(state)
-
       return R.pipe(
         R.always(_state),
-        R.set(R.lensPath(['onWork', onWork.addWork(action.meta.arg.data.id)]), true),
+        R.set(R.lensPath(['onWork', onWork.addWork(action.meta.arg.workId)]), true),
       )()
     })
+
 
     builder.addCase(createWork.fulfilled, (state: WorksState, action) => {
       const _state: WorksState = current(state)
@@ -207,16 +207,18 @@ export const worksSlice = createSlice({
         R.always(_state),
         addToStateWorkById,
         replaceIdsForNewWork,
-        R.set(R.lensPath(['metaById', action.payload.current.id, 'status', 'action']), ActionStatus.Idle)
+        R.set(R.lensPath(['metaById', action.payload.current.id, 'status', 'action']), ActionStatus.Idle),
+        R.set(R.lensPath(['onWork', onWork.addWork(action.meta.arg.workId)]), undefined),
       )()
     })
 
     builder.addCase(createWork.rejected, (state: WorksState, action) => {
       const errorLog = logError(action.meta.arg.data.id, 'createWork', action.error.message)
       const _state: WorksState = current(state)
+      
       return R.pipe(
         R.always(_state),
-        R.set(R.lensPath(['onWork', onWork.addWork(action.meta.arg.data.id)]), undefined),
+        R.set(R.lensPath(['onWork', onWork.addWork(action.meta.arg.workId)]), undefined),
         R.set(R.lensPath(['errorLogs']), R.append(errorLog, _state.errorLogs)),
       )()
     })
