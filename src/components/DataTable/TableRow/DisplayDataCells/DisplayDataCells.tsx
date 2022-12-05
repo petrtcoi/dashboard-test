@@ -16,7 +16,7 @@ const DisplayDataCells: React.FC<DisplayDataCellsProps> = (props) => {
 
   const handleClick = () => {
     if (blocked) return
-    dispatch(setActionStatus({ workId: props.workId, status: ActionStatus.Editing }))
+    dispatch(setActionStatus({ workId: props.workId, actionStatus: ActionStatus.Editing }))
   }
 
 

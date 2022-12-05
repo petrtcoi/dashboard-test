@@ -1,6 +1,6 @@
-import {WorkId } from '../../../../../typescript/work.type'
+import { WorkId } from '../../../../../typescript/work.type'
 import { useAppDispatch } from '../../../../../redux/hooks'
-import { removeWork } from "../../../../../redux/slices/works/functions/remove"
+import { deleteWork } from '../../../../../redux/slices/works'
 
 
 type RemoveWorkButtonProps = { workId: WorkId, disabled?: boolean }
@@ -11,8 +11,9 @@ export const RemoveWorkButton: React.FC<RemoveWorkButtonProps> = (props) => {
     <button
       disabled={ props.disabled }
       className={ `icon icon-remove` }
-      onClick={ () => dispatch(removeWork(props.workId)) }
+      onClick={ () => dispatch(deleteWork({ workId: props.workId })) }
     />
   )
 }
+
 

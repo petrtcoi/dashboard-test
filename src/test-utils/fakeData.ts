@@ -15,10 +15,10 @@ export function stateMetaWithNearestNodes(props: Partial<NearNodes> = {}): [Work
   const nextNodeId = faker.datatype.number()
   const firstChildNodeId = faker.datatype.number()
   const metaById = {
-    [parentNodeId]: fakeMeta(),
-    [prevNoDeId]: fakeMeta(),
-    [nextNodeId]: fakeMeta(),
-    [firstChildNodeId]: fakeMeta(),
+    [parentNodeId]: fakeMeta({firstChildNode: selfNodeId}),
+    [prevNoDeId]: fakeMeta({nextNode: selfNodeId}),
+    [nextNodeId]: fakeMeta({prevNode: selfNodeId}),
+    [firstChildNodeId]: fakeMeta({parentNode: selfNodeId}),
     [selfNodeId]: fakeMeta({ parentNode: parentNodeId, prevNode: prevNoDeId, nextNode: nextNodeId, firstChildNode: firstChildNodeId })
   }
   return [selfNodeId, metaById]
@@ -39,12 +39,14 @@ export function fakeMeta(props: Partial<WorkMeta> = {}): WorkMeta {
   return mergeDeepLeft(props, data)
 }
 
-
+/**
+ * Создает в базовом варианте: status Idle, drawBetweenUpperSiblings: false
+ */
 export function fakeMetaStatus(props: Partial<WorkStatus> = {}): WorkStatus {
   const data = {
-    visibility: faker.helpers.arrayElement(Object.values(VisibilityStatus)),
-    action: faker.helpers.arrayElement(Object.values(ActionStatus)),
-    drawBetweenUpperSiblings: faker.datatype.boolean(),
+    visibility: VisibilityStatus.Expanded,
+    action: ActionStatus.Idle,
+    drawBetweenUpperSiblings: false,
   }
   return mergeDeepLeft(props, data)
 }

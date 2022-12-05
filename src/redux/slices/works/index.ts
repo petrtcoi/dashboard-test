@@ -70,7 +70,7 @@ export const worksSlice = createSlice({
       const _state: WorksState = current(state)
       return R.pipe(
         R.ifElse(
-          () => status === ActionStatus.Idle,
+          () => actionStatus === ActionStatus.Idle,
           () => _state,
           () => switchOffWorks(_state)
         ),
@@ -80,6 +80,14 @@ export const worksSlice = createSlice({
       )()
     },
 
+
+    /** 
+   * Отменяем созданеи задачи. Для этого ее просто вычеркиваем из Meta 
+   */
+    cancelCreatingTask: (state, action: PayloadAction<{ workId: WorkId }>) => {
+      const { workId } = action.payload
+      return deleteFromState(workId, state)
+    },
 
 
 
@@ -180,5 +188,5 @@ export const worksSlice = createSlice({
 
 })
 
-export const { setStatus, setSuperStatus, setActionStatus, preCreateWork } = worksSlice.actions
+export const { setStatus, setSuperStatus, setActionStatus, preCreateWork, cancelCreatingTask } = worksSlice.actions
 export default worksSlice.reducer

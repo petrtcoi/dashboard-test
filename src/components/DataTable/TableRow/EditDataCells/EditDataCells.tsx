@@ -5,7 +5,8 @@ import { useAppDispatch, useAppSelector } from '../../../../redux/hooks/index'
 import { selectWork } from '../../../../redux/slices/works/selectors/selectWork'
 
 import './EditDataCells.styles.scss'
-import { setActionStatus, updateWork } from '../../../../redux/slices/works'
+import { cancelCreatingTask, setActionStatus, updateWork } from '../../../../redux/slices/works'
+import { selectMeta } from '../../../../redux/slices/works/selectors/selectMeta'
 
 
 type EditDataCellsProps = { workId: WorkId }
@@ -14,13 +15,18 @@ const EditDataCells: React.FC<EditDataCellsProps> = (props) => {
 
   const dispatch = useAppDispatch()
   const work = useAppSelector(selectWork(props.workId))
+  const meta = useAppSelector(selectMeta(props.workId))
   const { register, getValues } = connectUseForm(work)
 
   const saveUpdates = () => {
     dispatch(updateWork({ workId: props.workId, data: getValues() }))
   }
   const cancelEditing = () => {
-    dispatch(setActionStatus({ workId: props.workId, actionStatus: ActionStatus.Idle }))
+    if (meta.status.action === ActionStatus.Creating) {
+      dispatch(cancelCreatingTask({ workId: props.workId }))
+    } else {
+      dispatch(setActionStatus({ workId: props.workId, actionStatus: ActionStatus.Idle }))
+    }
   }
 
   useListenKeyboard(saveUpdates, cancelEditing)

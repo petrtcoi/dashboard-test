@@ -1,13 +1,13 @@
+import * as R from 'ramda'
 import { describe, expect, it } from 'vitest'
 import { faker } from '@faker-js/faker'
+
 import { fakeMeta, fakeMetaStatus, stateMetaWithNearestNodes } from './../../../../../test-utils/fakeData'
 
-import { ActionStatus, VisibilityStatus, WorkMeta } from '../../../../../typescript/work.type'
+import { ActionStatus, WorkMeta } from '../../../../../typescript/work.type'
 import { extractDrawSiblingsLines, extractParentAction, getSelfSuperStatus } from '../updateSuperStatusDownfall'
-import { mergeLeft } from 'ramda'
 import { WorksState } from '../..'
 
-import testState from '../../../../../test-utils/test_example'
 
 
 describe('updateSuperStatusDownfall', () => {
@@ -21,15 +21,32 @@ describe('updateSuperStatusDownfall', () => {
       const wrongWorkId = -workId
       expect(getSelfSuperStatus(state, wrongWorkId)).toBeUndefined()
     })
-    it('get superStatus from prevNode, if it exist and if no parentNode', () => {
-      const res = getSelfSuperStatus(testState, 22657)
-      expect(res?.action).toBe(ActionStatus.Creating)
-      expect(res?.drawBetweenUpperSiblings).toBe(true)
+    it('get superStatus from parentNode Status', () => {
+      const [workId, _metaById] = stateMetaWithNearestNodes()
+      const parentNode = _metaById[workId].parentNode?.toString() || 'trash'
+      const metaById = R.pipe(
+        R.always(_metaById),
+        R.set(R.lensPath([parentNode, 'status', 'action']), ActionStatus.Creating),
+        R.set(R.lensPath([parentNode, 'status', 'drawBetweenUpperSiblings']), true)
+      )()
+      const state = { metaById }  as WorksState
+      const newStatus = getSelfSuperStatus(state, workId)
+      expect(newStatus?.action).toBe(ActionStatus.Creating)
+      expect(newStatus?.drawBetweenUpperSiblings).toBe(true)
     })
-    it('get superStatus from parentNode, if it exist and if no parentNode', () => {
-      const res = getSelfSuperStatus(testState, 22663)
-      expect(res?.action).toBe(ActionStatus.Editing)
-      expect(res?.drawBetweenUpperSiblings).toBe(true)
+    it('get superStatus from prevNode SuperStatus if no parentNode ', () => {
+      const [workId, _metaById] = stateMetaWithNearestNodes()
+      const prevNode = _metaById[workId].prevNode?.toString() || '_trash'
+      const metaById = R.pipe(
+        R.always(_metaById),
+        R.set(R.lensPath([workId, 'parentNode']), undefined),
+        R.set(R.lensPath([prevNode, 'superStatus', 'action']), ActionStatus.Creating),
+        R.set(R.lensPath([prevNode, 'superStatus', 'drawBetweenUpperSiblings']), true)
+      )()
+      const state = { metaById }  as WorksState
+      const newStatus = getSelfSuperStatus(state, workId)
+      expect(newStatus?.action).toBe(ActionStatus.Creating)
+      expect(newStatus?.drawBetweenUpperSiblings).toBe(true)
     })
   })
 
@@ -39,23 +56,23 @@ describe('updateSuperStatusDownfall', () => {
     const statusIdle = fakeMetaStatus({ action: ActionStatus.Idle })
     const statusCreating = fakeMetaStatus({ action: ActionStatus.Creating })
     const statusEditing = fakeMetaStatus({ action: ActionStatus.Editing })
-    const metaStatusIdle = mergeLeft({ status: statusIdle }, meta)
+    const metaStatusIdle = R.mergeLeft({ status: statusIdle }, meta)
 
     it('return ActionStatus.Creating if the same in meta.status', () => {
-      const data = mergeLeft({ status: statusCreating }, meta)
+      const data = R.mergeLeft({ status: statusCreating }, meta)
       expect(extractParentAction(data)).toBe(ActionStatus.Creating)
     })
     it('return ActionStatus.Editing if the same in meta.status', () => {
-      const data = mergeLeft({ status: statusEditing }, meta)
+      const data = R.mergeLeft({ status: statusEditing }, meta)
       expect(extractParentAction(data)).toBe(ActionStatus.Editing)
     })
     it('return ActionStatus.Creating if status.Idle, but superStatus - creating', () => {
-      const data = mergeLeft({ superStatus: statusCreating }, metaStatusIdle)
+      const data = R.mergeLeft({ superStatus: statusCreating }, metaStatusIdle)
       expect(extractParentAction(data as WorkMeta)).toBe(ActionStatus.Creating)
     })
     it('return Idle if status and superStatus with action = Idle', () => {
       const superStatusIdle = fakeMetaStatus({ action: ActionStatus.Idle })
-      const data = mergeLeft({ superStatus: superStatusIdle }, metaStatusIdle)
+      const data = R.mergeLeft({ superStatus: superStatusIdle }, metaStatusIdle)
       expect(extractParentAction(data)).toBe(ActionStatus.Idle)
     })
 
@@ -71,12 +88,12 @@ describe('updateSuperStatusDownfall', () => {
     })
     it('return FALSE if meta without nextNode and with SupseStatus drawingsSibligLines = false', () => {
       const superStatus = fakeMetaStatus({ drawBetweenUpperSiblings: false })
-      const data = mergeLeft({ superStatus }, metaWithoutNextNode)
+      const data = R.mergeLeft({ superStatus }, metaWithoutNextNode)
       expect(extractDrawSiblingsLines(data)).toBe(false)
     })
     it('return TRUE if meta without nextNode but with SupseStatus drawingsSibligLines = true', () => {
       const superStatus = fakeMetaStatus({ drawBetweenUpperSiblings: true })
-      const data = mergeLeft({ superStatus }, metaWithoutNextNode)
+      const data = R.mergeLeft({ superStatus }, metaWithoutNextNode)
       expect(extractDrawSiblingsLines(data)).toBe(true)
     })
 
