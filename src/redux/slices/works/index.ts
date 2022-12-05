@@ -1,16 +1,18 @@
 import { createSlice, current, PayloadAction } from "@reduxjs/toolkit"
-import { fetchAllWorks, updateWork, deleteWork } from "./asyncThunks/"
+import { fetchAllWorks, updateWork, deleteWork, createWork } from "./asyncThunks/"
 
 import * as R from 'ramda'
 
 import {
-  addDeleteWork, onWork, addUpdateWork, clearDeleteWork, clearUpdateWork,
+  onWork, addUpdateWork, clearUpdateWork,
   deleteFromState, preCreateWorkInState, switchOffWorks, updateInState, updateSuperStatusDownfall
 } from "./utils"
 
 
 import { ActionStatus, Work, WorkId, WorkMeta, WorkStatus } from '../../../typescript/work.type'
 import { ErrorLog, logError } from "../../../typescript/errorLog.type"
+import { replaceWorkIdInState } from "./utils/replaceWorkIdInState"
+import { addWorkToStateWorkById } from "./utils/addWorkToStateWorkById"
 
 
 
@@ -74,9 +76,7 @@ export const worksSlice = createSlice({
           () => _state,
           () => switchOffWorks(_state)
         ),
-        R.tap((x) => console.log('set state: ', x)),
         R.set(R.lensPath(['metaById', workId, 'status', 'action']), actionStatus),
-        R.tap((x) => console.log('set state: ', x))
       )()
     },
 
@@ -184,9 +184,46 @@ export const worksSlice = createSlice({
     builder.addCase(updateWork.rejected, (state: WorksState, action) => {
       return { ...state, onWork: clearUpdateWork(state.onWork), errorLogs: [...state.errorLogs, logError(null, 'fetchAllWorks', action.error.message)] }
     })
+
+    /**
+    * Создание  Work
+    */
+
+    builder.addCase(createWork.pending, (state: WorksState, action) => {
+      const _state: WorksState = current(state)
+
+      return R.pipe(
+        R.always(_state),
+        R.set(R.lensPath(['onWork', onWork.addWork(action.meta.arg.data.id)]), true),
+      )()
+    })
+
+    builder.addCase(createWork.fulfilled, (state: WorksState, action) => {
+      const _state: WorksState = current(state)
+      const addToStateWorkById = addWorkToStateWorkById(action.payload.current)
+      const replaceIdsForNewWork = replaceWorkIdInState(action.payload.current.id, action.payload.preCreateWorkId)
+    
+      return R.pipe(
+        R.always(_state),
+        addToStateWorkById,
+        replaceIdsForNewWork,
+        R.set(R.lensPath(['metaById', action.payload.current.id, 'status', 'action']), ActionStatus.Idle)
+      )()
+    })
+
+    builder.addCase(createWork.rejected, (state: WorksState, action) => {
+      const errorLog = logError(action.meta.arg.data.id, 'createWork', action.error.message)
+      const _state: WorksState = current(state)
+      return R.pipe(
+        R.always(_state),
+        R.set(R.lensPath(['onWork', onWork.addWork(action.meta.arg.data.id)]), undefined),
+        R.set(R.lensPath(['errorLogs']), R.append(errorLog, _state.errorLogs)),
+      )()
+    })
   }
 
 })
+
 
 export const { setStatus, setSuperStatus, setActionStatus, preCreateWork, cancelCreatingTask } = worksSlice.actions
 export default worksSlice.reducer
