@@ -36,7 +36,7 @@ function _updateSuperStatusDownfall(workId: WorkId | undefined, state: WorksStat
       )
     ),
   )()
-}
+} 
 
 
 
@@ -75,8 +75,7 @@ function _getPrevNodeSuperStatus(state: WorksState, meta: WorkMeta):  WorkStatus
  */
 export const extractSuperStatusFromParent = R.curry(_extractSuperStatusFromParent)
 function _extractSuperStatusFromParent(state: WorksState, meta: WorkMeta): WorkStatus | undefined {
-
-  if (!meta.parentNode) return undefined
+  if (R.isNil(meta.parentNode)) return undefined
   const parentMeta = state.metaById[meta.parentNode]
 
   return R.pipe(
